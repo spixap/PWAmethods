@@ -1,8 +1,6 @@
 %%%%%%%%%% PWA approximation of function of 2 variables f(x,y) %%%%%%%%%%%%
 clearvars; close all;
-
-% This is the verison of: branch02 AND I MAKE SOME ADDITONAL CHANGES
-% This is just the branch 01
+% This is the verison of: branch02
 
 % Set of n coordinates on X axis: 1,...,n (x1=0, xn=6)
 n = 11;
