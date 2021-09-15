@@ -1,5 +1,7 @@
 %%%%%%%%%% PWA approximation of function of 2 variables f(x,y) %%%%%%%%%%%%
 clearvars; close all;
+% This is just the branch 01
+
 
 % Set of n coordinates on X axis: 1,...,n (x1=0, xn=6)
 n = 11;
@@ -8,6 +10,9 @@ n = 11;
 m = 11;
 
 bigM = 100000;
+
+minFunVal = -6;
+maxValFun = 8;
 
 % -------------------\\ INPUT: Function fun = f(x,y) \\------------------------
 x_min = 0;
@@ -33,7 +38,7 @@ x_var   = optimvar('x_var','LowerBound',x_min,'UpperBound',x_max);
 beta_j  = optimvar('beta',m,'Type','integer','LowerBound',0,'UpperBound',1);
 h_i     = optimvar('h',n+1,'Type','integer','LowerBound',0,'UpperBound',1);
 alpha_i = optimvar('alpha',n,'LowerBound',0,'UpperBound',1);
-f_a     = optimvar('f_a','LowerBound',-6,'UpperBound',8);
+f_a     = optimvar('f_a','LowerBound',minFunVal,'UpperBound',maxValFun);
 
 
 % Naming variables indexes
@@ -89,7 +94,6 @@ end
 prob.Constraints.xValueEst = x_var == temp0;
 
 % ---------VARIABLE Y
-% prob.Constraints.sumBeta = sum(beta_j) == 1;
 
 % Upper Limit of y value for j interval
 temp1 = 0;
@@ -141,6 +145,7 @@ prob.Constraints.functionValueCnstrB = functionValueCnstrB;
 options = optimoptions('intlinprog');
 [sol,f_sol] = solve(prob,'Options',options);
 %% -----------------------\\ Optimal Solution Plot\\-------------------------
-mesh(X,Y,fun1);xlabel('x');ylabel('y');zlabel('f(x,y)');grid on;hold on;
+mesh(X,Y,fun1,'DisplayName','function');xlabel('x');ylabel('y');zlabel('f(x,y)');grid on;hold on;
 scatter3(sol.y_var,sol.x_var,f_sol,'ro','filled','DisplayName','Optimal Point');
-% plot(x,slope*x,'g','LineWidth',2,'DisplayName','y=x');legend;
+% plot(x,slope*x,'g','LineWidth',2,'DisplayName','y=x');
+surf(X,Y,minFunVal*ones(n,m),'DisplayName','constraint');legend;
