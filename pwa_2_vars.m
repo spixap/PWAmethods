@@ -1,6 +1,5 @@
 %%%%%%%%%% PWA approximation of function of 2 variables f(x,y) %%%%%%%%%%%%
 clearvars; close all;
-% Set I of discretization points
 
 % Set of n coordinates on X axis: 1,...,n (x1=0, xn=6)
 n = 11;
@@ -19,30 +18,22 @@ x = linspace(x_min,x_max,n);
 y = linspace(y_min,y_max,m); 
 [X,Y] = meshgrid(x,y);
 
-
 % Functions to approximate:
-fun1 = Y.*sin((X-3)*pi/4);
+% fun1 = Y.*sin((X-3)*pi/4);
 % fun1 = ((10-Y).^3).*sin((X-1)*pi/4);
 % fun1 = Y + sin((X-3)*pi/4);
 % fun1 = Y.*sin((X-1)*pi/4);
-% fun1 = Y.*cos((X-1)*pi/4);
+fun1 = Y.*cos((X-1)*pi/4);
 
 %% --------------------\\ Optimization Problem \\--------------------------
 prob = optimproblem('ObjectiveSense','minimize');
 % -------------------\\ Optimization Variables \\--------------------------
-% beta_j   = optimvar('beta_j',m,'LowerBound',0);
 y_var   = optimvar('y_var','LowerBound',y_min,'UpperBound',y_max);
 x_var   = optimvar('x_var','LowerBound',x_min,'UpperBound',x_max);
-
-% beta_j  = optimvar('beta_j',m,'Type','integer','LowerBound',0,'UpperBound',1);
-% h_i     = optimvar('h_i',n+1,'Type','integer','LowerBound',0,'UpperBound',1);
-% alpha_i = optimvar('alpha_i',n,'LowerBound',0,'UpperBound',1);
-
 beta_j  = optimvar('beta',m,'Type','integer','LowerBound',0,'UpperBound',1);
 h_i     = optimvar('h',n+1,'Type','integer','LowerBound',0,'UpperBound',1);
 alpha_i = optimvar('alpha',n,'LowerBound',0,'UpperBound',1);
-
-f_a = optimvar('f_a','LowerBound',-6,'UpperBound',8);
+f_a     = optimvar('f_a','LowerBound',-6,'UpperBound',8);
 
 
 % Naming variables indexes
@@ -73,20 +64,17 @@ alphaCnstr = optimconstr(n);
 functionValueCnstrA = optimconstr(m-1);
 functionValueCnstrB = optimconstr(m-1);
 
-
 % SOS1 on binaries h
 prob.Constraints.hSOS1a = h_i(1) == 0;
 prob.Constraints.hSOS1b = h_i(end) == 0;
 prob.Constraints.hSOS1c = sum(h_i(2:end-1)) == 1;
 
 % Linear weights constraints
-% alphaCnstr(1) = alpha_i(append('i_',int2str(1))) <= h_i(append('i_',int2str(0))) + h_i(append('i_',int2str(1)));
 for i = 1 : n
     index_i = append('i_',int2str(i));
     index_i_prev = append('i_',int2str(i-1));
     alphaCnstr(i) = alpha_i(index_i) <= h_i(index_i_prev) + h_i(index_i) ;
 end
-% alphaCnstr(n) = alpha_i(append('i_',int2str(n))) <= h_i(append('i_',int2str(n-1)));
 prob.Constraints.alphaCnstr = alphaCnstr;
 
 % Sum of alphas is 1 (convexity)
@@ -153,8 +141,6 @@ prob.Constraints.functionValueCnstrB = functionValueCnstrB;
 options = optimoptions('intlinprog');
 [sol,f_sol] = solve(prob,'Options',options);
 %% -----------------------\\ Optimal Solution Plot\\-------------------------
-% plot(x,fun1,'k','LineWidth',1.5,'DisplayName','f(x)');xlabel('x');ylabel('y');grid on;hold on;
 mesh(X,Y,fun1);xlabel('x');ylabel('y');zlabel('f(x,y)');grid on;hold on;
-% scatter(x,fun1,'bs','filled','DisplayName','Data Points');
 scatter3(sol.y_var,sol.x_var,f_sol,'ro','filled','DisplayName','Optimal Point');
 % plot(x,slope*x,'g','LineWidth',2,'DisplayName','y=x');legend;
