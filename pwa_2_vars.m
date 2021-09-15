@@ -1,6 +1,5 @@
 %%%%%%%%%% PWA approximation of function of 2 variables f(x,y) %%%%%%%%%%%%
 clearvars; close all;
-% This is the verison of: branch02 AND I MAKE SOME ADDITONAL CHANGES
 
 % Set of n coordinates on X axis: 1,...,n (x1=0, xn=6)
 n = 11;
@@ -10,8 +9,9 @@ m = 11;
 
 bigM = 100000;
 
-minFunVal = -6;
-maxValFun = 8;
+minFunVal   = -6;
+maxValFun   = 8;
+csntrFunVal = 0;
 
 % -------------------\\ INPUT: Function fun = f(x,y) \\------------------------
 x_min = 0;
@@ -139,7 +139,7 @@ end
 prob.Constraints.functionValueCnstrB = functionValueCnstrB;
 
 % Additional Constraint (just for demonstration): fun == c (level function)
-% prob.Constraints.linearityCnstr = f_a == 0;
+prob.Constraints.linearityCnstr = f_a == csntrFunVal;
 %% --------------------\\ Optimization Solution \\-------------------------
 options = optimoptions('intlinprog');
 [sol,f_sol] = solve(prob,'Options',options);
@@ -147,4 +147,4 @@ options = optimoptions('intlinprog');
 mesh(X,Y,fun1,'DisplayName','function');xlabel('x');ylabel('y');zlabel('f(x,y)');grid on;hold on;
 scatter3(sol.y_var,sol.x_var,f_sol,'ro','filled','DisplayName','Optimal Point');
 % plot(x,slope*x,'g','LineWidth',2,'DisplayName','y=x');
-surf(X,Y,minFunVal*ones(n,m),'DisplayName','constraint');legend;
+surf(X,Y,csntrFunVal*ones(n,m),'DisplayName','constraint');legend;
