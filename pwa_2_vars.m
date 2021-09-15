@@ -1,5 +1,6 @@
 %%%%%%%%%% PWA approximation of function of 2 variables f(x,y) %%%%%%%%%%%%
 clearvars; close all;
+% this is the main
 
 % Set of n coordinates on X axis: 1,...,n (x1=0, xn=6)
 n = 11;
@@ -146,5 +147,4 @@ options = optimoptions('intlinprog');
 %% -----------------------\\ Optimal Solution Plot\\-------------------------
 mesh(X,Y,fun1,'DisplayName','function');xlabel('x');ylabel('y');zlabel('f(x,y)');grid on;hold on;
 scatter3(sol.y_var,sol.x_var,f_sol,'ro','filled','DisplayName','Optimal Point');
-% plot(x,slope*x,'g','LineWidth',2,'DisplayName','y=x');
 surf(X,Y,csntrFunVal*ones(n,m),'DisplayName','constraint');legend;
