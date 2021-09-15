@@ -3,10 +3,10 @@ clearvars; close all;
 % Set I of discretization points
 
 % Set of n coordinates on X axis: 1,...,n (x1=0, xn=6)
-n = 21;
+n = 11;
 
 % Set of m coordinates on Y axis: 1,...,m (y1=0, ym=6)
-m = 21;
+m = 11;
 
 bigM = 100000;
 
@@ -124,11 +124,6 @@ prob.Constraints.sumBeta = sum(beta_j(1:end-1)) == 1;
 
 % ---------VALUE FUNCTION
 % Lower Limit of function approximation f_a for j interval
-% temp3 = 0;
-% for i = 1 : n
-%     index_i = append('i_',int2str(i));
-%     temp3 = temp3 + alpha_i(index_i) * fun1(i,j);
-% end
 
 for j = 1 : m-1
     temp3 = 0;
@@ -141,7 +136,6 @@ for j = 1 : m-1
 end
 prob.Constraints.functionValueCnstrA = functionValueCnstrA;
 
-% temp3 = 0;
 for j = 1 : m-1
     temp4 = 0;
     for i = 1 : n
