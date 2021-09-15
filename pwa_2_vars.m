@@ -1,6 +1,5 @@
 %%%%%%%%%% PWA approximation of function of 2 variables f(x,y) %%%%%%%%%%%%
 clearvars; close all;
-% this is the main
 
 % Set of n coordinates on X axis: 1,...,n (x1=0, xn=6)
 n = 11;
