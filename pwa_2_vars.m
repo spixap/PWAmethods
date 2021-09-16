@@ -2,10 +2,10 @@
 clearvars; close all;
 
 % Set of n coordinates on X axis: 1,...,n (x1=0, xn=6)
-n = 11;
+n = 21;
 
 % Set of m coordinates on Y axis: 1,...,m (y1=0, ym=6)
-m = 11;
+m = 21;
 
 bigM = 100000;
 
@@ -23,11 +23,11 @@ y = linspace(y_min,y_max,m);
 [X,Y] = meshgrid(x,y);
 
 % Functions to approximate:
-% fun1 = Y.*sin((X-3)*pi/4);
-% fun1 = ((10-Y).^3).*sin((X-1)*pi/4);
-% fun1 = Y + sin((X-3)*pi/4);
-% fun1 = Y.*sin((X-1)*pi/4);
-fun1 = Y.*cos((X-1)*pi/4);
+fun = Y.*sin((X-3)*pi/4);
+% fun = ((10-Y).^3).*sin((X-1)*pi/4);
+% fun = Y + sin((X-3)*pi/4);
+% fun = Y.*sin((X-1)*pi/4);
+% fun = Y.*cos((X-1)*pi/4);
 
 %% --------------------\\ Optimization Problem \\--------------------------
 prob = optimproblem('ObjectiveSense','minimize');
@@ -120,7 +120,7 @@ for j = 1 : m-1
     temp3 = 0;
     for i = 1 : n
         index_i = append('i_',int2str(i));
-        temp3 = temp3 + alpha_i(index_i) * fun1(i,j);
+        temp3 = temp3 + alpha_i(index_i) * fun(i,j);
     end    
     index_j = append('j_',int2str(j));
     functionValueCnstrA(j) = f_a <= temp3 + bigM * (1-beta_j(index_j));
@@ -131,7 +131,7 @@ for j = 1 : m-1
     temp4 = 0;
     for i = 1 : n
         index_i = append('i_',int2str(i));
-        temp4 = temp4 + alpha_i(index_i) * fun1(i,j);
+        temp4 = temp4 + alpha_i(index_i) * fun(i,j);
     end
     index_j = append('j_',int2str(j));
     functionValueCnstrB(j) = f_a >= temp4 - bigM * (1-beta_j(index_j));
@@ -144,6 +144,6 @@ prob.Constraints.linearityCnstr = f_a == csntrFunVal;
 options = optimoptions('intlinprog');
 [sol,f_sol] = solve(prob,'Options',options);
 %% -----------------------\\ Optimal Solution Plot\\-------------------------
-mesh(X,Y,fun1,'DisplayName','function');xlabel('x');ylabel('y');zlabel('f(x,y)');grid on;hold on;
+mesh(X,Y,fun,'DisplayName','function');xlabel('x');ylabel('y');zlabel('f(x,y)');grid on;hold on;
 scatter3(sol.y_var,sol.x_var,f_sol,'ro','filled','DisplayName','Optimal Point');
 surf(X,Y,csntrFunVal*ones(n,m),'DisplayName','constraint');legend;
