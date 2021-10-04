@@ -1,7 +1,8 @@
 %%%%%%%%%% PWA approximation of function of 2 variables f(x,y) %%%%%%%%%%%%
-clearvars; close all;
+clearvars -except spi_temp ;
+close all;
 
-I = 31;
+I = 201;
 % Set of n coordinates on X axis: 1,...,n (x1=0, xn=6)
 n = I;
 
@@ -9,6 +10,11 @@ n = I;
 m = I;
 
 bigM = 100000;
+
+% bigM = 1000000;
+
+% bigM = 1000;
+
 
 % minFunVal   = -6;
 % maxValFun   = 8;
@@ -19,7 +25,7 @@ bigM = 100000;
 minFunVal   = 0;
 maxValFun   = 300;
 
-csntrFunVal = 0;
+csntrFunVal = 217;
 
 % -------------------\\ INPUT: Function fun = f(x,y) \\------------------------
 % x_min = 0;
@@ -27,22 +33,25 @@ csntrFunVal = 0;
 % y_min = 0;
 % y_max = 6;
 
-% x_min = 0;
-% x_max = 6;
-% 
-% y_min = 45;
-% y_max = 50;
-
-
 x_min = 0;
-x_max = 1;
+x_max = 6;
 
-y_min = 0;
-y_max = 1;
+y_min = 45;
+y_max = 50;
+
+
+% x_min = 0;
+% x_max = 1;
+% 
+% y_min = 0;
+% y_max = 1;
 
 x = linspace(x_min,x_max,n); 
 y = linspace(y_min,y_max,m); 
 [X,Y] = meshgrid(x,y);
+
+z = linspace(minFunVal,maxValFun,m);
+[~,Z] = meshgrid(x,z);
 
 % Functions to approximate:
 fun = Y.*X;
@@ -128,7 +137,7 @@ for j = 1 : m-1
     index_j = append('j_',int2str(j));
     temp1 = temp1 + beta_j(index_j) * x(j+1);
 end
-prob.Constraints.slctUpperYlim = x_var <= temp1 ;
+prob.Constraints.slctUpperYlim = x_var <= temp1 - 2*10^(-4) ;
 
 % Lower Limit of y value for j interval
 temp2 = 0;
@@ -168,6 +177,8 @@ prob.Constraints.functionValueCnstrB = functionValueCnstrB;
 
 % Additional Constraint: fun == c (set level)
 prob.Constraints.linearityCnstr = f_a >= csntrFunVal;
+prob.Constraints.linearityCnstr2 = y_var == 47;
+
 %% --------------------\\ Optimization Solution \\-------------------------
 options = optimoptions('intlinprog');
 [sol,f_sol] = solve(prob,'Options',options);
@@ -175,4 +186,6 @@ options = optimoptions('intlinprog');
 mesh(X,Y,fun,'DisplayName','function');xlabel('x');ylabel('y');zlabel('f(x,y)');grid on;hold on;
 % scatter3(sol.y_var,sol.x_var,f_sol,'ro','filled','DisplayName','Optimal Point');
 scatter3(sol.x_var,sol.y_var,f_sol,'ro','filled','DisplayName','Optimal Point');
-surf(X,Y,csntrFunVal*ones(n,m),'DisplayName','constraint');legend;
+surf(X,Y,csntrFunVal*ones(n,m),'DisplayName','constraint_1');
+surf(X,47*ones(n,m),Z,'DisplayName','constraint_2');
+legend;
