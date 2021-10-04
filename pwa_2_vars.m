@@ -1,7 +1,7 @@
 %%%%%%%%%% PWA approximation of function of 2 variables f(x,y) %%%%%%%%%%%%
 clearvars; close all;
 
-I = 51;
+I = 31;
 % Set of n coordinates on X axis: 1,...,n (x1=0, xn=6)
 n = I;
 
@@ -13,24 +13,33 @@ bigM = 100000;
 % minFunVal   = -6;
 % maxValFun   = 8;
 
-minFunVal   = 0;
-maxValFun   = 50;
-
 % minFunVal   = 0;
-% maxValFun   = 600;
+% maxValFun   = 300;
 
-csntrFunVal = 10;
+minFunVal   = 0;
+maxValFun   = 300;
+
+csntrFunVal = 0;
 
 % -------------------\\ INPUT: Function fun = f(x,y) \\------------------------
-x_min = 0;
-x_max = 6;
-y_min = 0;
-y_max = 6;
-
-% x_min = 45;
-% x_max = 50;
+% x_min = 0;
+% x_max = 6;
 % y_min = 0;
-% y_max = 10;
+% y_max = 6;
+
+% x_min = 0;
+% x_max = 6;
+% 
+% y_min = 45;
+% y_max = 50;
+
+
+x_min = 0;
+x_max = 1;
+
+y_min = 0;
+y_max = 1;
+
 x = linspace(x_min,x_max,n); 
 y = linspace(y_min,y_max,m); 
 [X,Y] = meshgrid(x,y);
@@ -46,8 +55,12 @@ fun = Y.*X;
 %% --------------------\\ Optimization Problem \\--------------------------
 prob = optimproblem('ObjectiveSense','minimize');
 % -------------------\\ Optimization Variables \\--------------------------
+% y_var   = optimvar('y_var','LowerBound',y_min,'UpperBound',y_max);
+% x_var   = optimvar('x_var','LowerBound',x_min,'UpperBound',x_max);
+
 y_var   = optimvar('y_var','LowerBound',y_min,'UpperBound',y_max);
 x_var   = optimvar('x_var','LowerBound',x_min,'UpperBound',x_max);
+
 beta_j  = optimvar('beta',m,'Type','integer','LowerBound',0,'UpperBound',1);
 h_i     = optimvar('h',n+1,'Type','integer','LowerBound',0,'UpperBound',1);
 alpha_i = optimvar('alpha',n,'LowerBound',0,'UpperBound',1);
@@ -102,9 +115,10 @@ prob.Constraints.sumAlpha = sum(alpha_i) == 1;
 temp0 = 0;
 for i = 1 : n
     index_i = append('i_',int2str(i));
-    temp0 = temp0 + alpha_i(index_i) * x(i);
+    temp0 = temp0 + alpha_i(index_i) * y(i);
 end
-prob.Constraints.xValueEst = x_var == temp0;
+prob.Constraints.xValueEst = y_var == temp0;
+
 
 % ---------VARIABLE Y
 
@@ -112,17 +126,17 @@ prob.Constraints.xValueEst = x_var == temp0;
 temp1 = 0;
 for j = 1 : m-1
     index_j = append('j_',int2str(j));
-    temp1 = temp1 + beta_j(index_j) * y(j+1);
+    temp1 = temp1 + beta_j(index_j) * x(j+1);
 end
-prob.Constraints.slctUpperYlim = y_var <= temp1;
+prob.Constraints.slctUpperYlim = x_var <= temp1 ;
 
 % Lower Limit of y value for j interval
 temp2 = 0;
 for j = 1 : m-1
     index_j = append('j_',int2str(j));
-    temp2 = temp2 + beta_j(index_j) * y(j);
+    temp2 = temp2 + beta_j(index_j) * x(j);
 end
-prob.Constraints.slctLowerYlim = y_var >= temp2;
+prob.Constraints.slctLowerYlim = x_var >= temp2;
 
 % SOS1 on binaries beta
 prob.Constraints.sumBeta = sum(beta_j(1:end-1)) == 1;
@@ -153,12 +167,12 @@ end
 prob.Constraints.functionValueCnstrB = functionValueCnstrB;
 
 % Additional Constraint: fun == c (set level)
-prob.Constraints.linearityCnstr = f_a == csntrFunVal;
+prob.Constraints.linearityCnstr = f_a >= csntrFunVal;
 %% --------------------\\ Optimization Solution \\-------------------------
 options = optimoptions('intlinprog');
 [sol,f_sol] = solve(prob,'Options',options);
 %% -----------------------\\ Optimal Solution Plot\\-------------------------
 mesh(X,Y,fun,'DisplayName','function');xlabel('x');ylabel('y');zlabel('f(x,y)');grid on;hold on;
-scatter3(sol.y_var,sol.x_var,f_sol,'ro','filled','DisplayName','Optimal Point');
-% scatter3(sol.x_var,sol.y_var,f_sol,'ro','filled','DisplayName','Optimal Point');
+% scatter3(sol.y_var,sol.x_var,f_sol,'ro','filled','DisplayName','Optimal Point');
+scatter3(sol.x_var,sol.y_var,f_sol,'ro','filled','DisplayName','Optimal Point');
 surf(X,Y,csntrFunVal*ones(n,m),'DisplayName','constraint');legend;
