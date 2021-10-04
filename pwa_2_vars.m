@@ -1,29 +1,43 @@
 %%%%%%%%%% PWA approximation of function of 2 variables f(x,y) %%%%%%%%%%%%
 clearvars; close all;
 
+I = 51;
 % Set of n coordinates on X axis: 1,...,n (x1=0, xn=6)
-n = 21;
+n = I;
 
 % Set of m coordinates on Y axis: 1,...,m (y1=0, ym=6)
-m = 21;
+m = I;
 
 bigM = 100000;
 
-minFunVal   = -6;
-maxValFun   = 8;
-csntrFunVal = 0;
+% minFunVal   = -6;
+% maxValFun   = 8;
+
+minFunVal   = 0;
+maxValFun   = 50;
+
+% minFunVal   = 0;
+% maxValFun   = 600;
+
+csntrFunVal = 10;
 
 % -------------------\\ INPUT: Function fun = f(x,y) \\------------------------
 x_min = 0;
 x_max = 6;
 y_min = 0;
 y_max = 6;
+
+% x_min = 45;
+% x_max = 50;
+% y_min = 0;
+% y_max = 10;
 x = linspace(x_min,x_max,n); 
 y = linspace(y_min,y_max,m); 
 [X,Y] = meshgrid(x,y);
 
 % Functions to approximate:
-fun = Y.*sin((X-3)*pi/4);
+fun = Y.*X;
+% fun = Y.*sin((X-3)*pi/4);
 % fun = ((10-Y).^3).*sin((X-1)*pi/4);
 % fun = Y + sin((X-3)*pi/4);
 % fun = Y.*sin((X-1)*pi/4);
@@ -146,4 +160,5 @@ options = optimoptions('intlinprog');
 %% -----------------------\\ Optimal Solution Plot\\-------------------------
 mesh(X,Y,fun,'DisplayName','function');xlabel('x');ylabel('y');zlabel('f(x,y)');grid on;hold on;
 scatter3(sol.y_var,sol.x_var,f_sol,'ro','filled','DisplayName','Optimal Point');
+% scatter3(sol.x_var,sol.y_var,f_sol,'ro','filled','DisplayName','Optimal Point');
 surf(X,Y,csntrFunVal*ones(n,m),'DisplayName','constraint');legend;
