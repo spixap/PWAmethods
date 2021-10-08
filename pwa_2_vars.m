@@ -2,7 +2,7 @@
 clearvars -except spi_temp ;
 close all;
 
-I = 51;
+I = 11;
 % Set of n coordinates on X axis: 1,...,n (x1=0, xn=6)
 n = I;
 
@@ -55,8 +55,8 @@ elseif funSlct == 2
     fun = Y.*sin((X-3)*pi/4);
     minFunVal   = -6;
     maxValFun   = 6;
-    csntrFunVal = 2.8;
-    csntrYval   = 3;
+    csntrFunVal = 3;
+    csntrYval   = 3.1;
 elseif funSlct == 3
     fun = ((10-Y).^3).*sin((X-1)*pi/4);
     minFunVal   = -800;
