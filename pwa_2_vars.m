@@ -13,7 +13,7 @@ m = I;
 bigM = 100000;
 
 % Test Function Selection (1-6):
-funSlct = 4;
+funSlct = 6;
 
 
 % -------------------\\ INPUT: Function fun = f(x,y) \\------------------------
