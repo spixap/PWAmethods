@@ -2,7 +2,7 @@
 clearvars -except spi_temp ;
 close all;
 
-I = 21;
+I = 51;
 % Set of n coordinates on X axis: 1,...,n (x1=0, xn=6)
 n = I;
 
@@ -21,21 +21,22 @@ csntrFunVal = 217;
 % x will be voltage and y current so i need to change allx with y and vice
 % versa
 
-x_min = 0;
-x_max = 6;
+x_min = 45;
+x_max = 50;
 
-y_min = 45;
-y_max = 50;
+y_min = 0;
+y_max = 6;
 
 x = linspace(x_min,x_max,n); 
 y = linspace(y_min,y_max,m); 
 [X,Y] = meshgrid(x,y);
 
 z = linspace(minFunVal,maxValFun,m);
-[~,Z] = meshgrid(x,z);
+[Z,~] = meshgrid(z,y);
 
 % Functions to approximate:
 fun = Y.*X;
+
 % fun = Y.*sin((X-3)*pi/4);
 % fun = ((10-Y).^3).*sin((X-1)*pi/4);
 % fun = Y + sin((X-3)*pi/4);
@@ -45,9 +46,6 @@ fun = Y.*X;
 %% --------------------\\ Optimization Problem \\--------------------------
 prob = optimproblem('ObjectiveSense','minimize');
 % -------------------\\ Optimization Variables \\--------------------------
-% y_var   = optimvar('y_var','LowerBound',y_min,'UpperBound',y_max);
-% x_var   = optimvar('x_var','LowerBound',x_min,'UpperBound',x_max);
-
 y_var   = optimvar('y_var','LowerBound',y_min,'UpperBound',y_max);
 x_var   = optimvar('x_var','LowerBound',x_min,'UpperBound',x_max);
 
@@ -105,9 +103,9 @@ prob.Constraints.sumAlpha = sum(alpha_i) == 1;
 temp0 = 0;
 for i = 1 : n
     index_i = append('i_',int2str(i));
-    temp0 = temp0 + alpha_i(index_i) * y(i);
+    temp0 = temp0 + alpha_i(index_i) * x(i);
 end
-prob.Constraints.xValueEst = y_var == temp0;
+prob.Constraints.xValueEst = x_var == temp0;
 
 
 % ---------VARIABLE Y
@@ -116,17 +114,17 @@ prob.Constraints.xValueEst = y_var == temp0;
 temp1 = 0;
 for j = 1 : m-1
     index_j = append('j_',int2str(j));
-    temp1 = temp1 + beta_j(index_j) * x(j+1);
+    temp1 = temp1 + beta_j(index_j) * y(j+1);
 end
-prob.Constraints.slctUpperYlim = x_var <= temp1 - 2*10^(-4) ;
+prob.Constraints.slctUpperYlim = y_var <= temp1 - 2*10^(-4) ;
 
 % Lower Limit of y value for j interval
 temp2 = 0;
 for j = 1 : m-1
     index_j = append('j_',int2str(j));
-    temp2 = temp2 + beta_j(index_j) * x(j);
+    temp2 = temp2 + beta_j(index_j) * y(j);
 end
-prob.Constraints.slctLowerYlim = x_var >= temp2;
+prob.Constraints.slctLowerYlim = y_var >= temp2;
 
 % SOS1 on binaries beta
 prob.Constraints.sumBeta = sum(beta_j(1:end-1)) == 1;
@@ -138,7 +136,8 @@ for j = 1 : m-1
     temp3 = 0;
     for i = 1 : n
         index_i = append('i_',int2str(i));
-        temp3 = temp3 + alpha_i(index_i) * fun(i,j);
+        temp3 = temp3 + alpha_i(index_i) * fun(j,i);
+
     end    
     index_j = append('j_',int2str(j));
     functionValueCnstrA(j) = f_a <= temp3 + bigM * (1-beta_j(index_j));
@@ -149,7 +148,8 @@ for j = 1 : m-1
     temp4 = 0;
     for i = 1 : n
         index_i = append('i_',int2str(i));
-        temp4 = temp4 + alpha_i(index_i) * fun(i,j);
+        temp3 = temp3 + alpha_i(index_i) * fun(j,i);
+
     end
     index_j = append('j_',int2str(j));
     functionValueCnstrB(j) = f_a >= temp4 - bigM * (1-beta_j(index_j));
@@ -158,15 +158,15 @@ prob.Constraints.functionValueCnstrB = functionValueCnstrB;
 
 % Additional Constraint: fun == c (set level)
 prob.Constraints.linearityCnstr = f_a >= csntrFunVal;
-prob.Constraints.linearityCnstr2 = y_var == 47;
+prob.Constraints.linearityCnstr2 = x_var == 47;
 
 %% --------------------\\ Optimization Solution \\-------------------------
 options = optimoptions('intlinprog');
 [sol,f_sol] = solve(prob,'Options',options);
 %% -----------------------\\ Optimal Solution Plot\\-------------------------
-mesh(X,Y,fun,'DisplayName','function');xlabel('x');ylabel('y');zlabel('f(x,y)');grid on;hold on;
-% scatter3(sol.y_var,sol.x_var,f_sol,'ro','filled','DisplayName','Optimal Point');
-scatter3(sol.x_var,sol.y_var,f_sol,'ro','filled','DisplayName','Optimal Point');
-surf(X,Y,csntrFunVal*ones(n,m),'DisplayName','constraint_1');
-surf(X,47*ones(n,m),Z,'DisplayName','constraint_2');
+surf(X,Y,fun,'FaceAlpha',0.8,'DisplayName','function');xlabel('x');ylabel('y');zlabel('f(x,y)');grid on;hold on;
+s = scatter3(sol.x_var,sol.y_var,f_sol,'ro','filled','DisplayName','Optimal Point');
+s.SizeData = 20;
+mesh(X,Y,csntrFunVal*ones(n,m),'FaceColor','r','FaceAlpha',0.3,'EdgeColor','none','DisplayName','constraint_1');
+mesh(47*ones(n,m),Y,Z,'FaceColor','r','FaceAlpha',0.3,'EdgeColor','none','DisplayName','constraint_2');
 legend;
