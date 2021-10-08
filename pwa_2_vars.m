@@ -13,7 +13,7 @@ m = I;
 bigM = 100000;
 
 % Test Function Selection (1-6):
-funSlct = 5;
+funSlct = 1;
 
 
 % -------------------\\ INPUT: Function fun = f(x,y) \\------------------------
@@ -168,7 +168,7 @@ end
 prob.Constraints.functionValueCnstrB = functionValueCnstrB;
 
 % Additional Constraint: fun == c (set level)
-% prob.Constraints.linearityCnstr = f_a == csntrFunVal;
+prob.Constraints.linearityCnstr = f_a == csntrFunVal;
 %% --------------------\\ Optimization Solution \\-------------------------
 options = optimoptions('intlinprog');
 [sol,f_sol] = solve(prob,'Options',options);
