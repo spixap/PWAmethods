@@ -44,7 +44,7 @@ y = linspace(y_min,y_max,m);
 
 
 % Test Function Selection (1-6):
-funSlct = 5;
+funSlct = 2;
 
 % Functions to approximate:
 if funSlct == 1
@@ -56,7 +56,7 @@ elseif funSlct == 2
     fun = Y.*sin((X-3)*pi/4);
     minFunVal   = -6;
     maxValFun   = 6;
-    csntrFunVal = -6;
+    csntrFunVal = 0;
 elseif funSlct == 3
     fun = ((10-Y).^3).*sin((X-1)*pi/4);
     minFunVal   = -800;
@@ -78,7 +78,6 @@ elseif funSlct == 6
     maxValFun   = 6;
     csntrFunVal = 1;
 end
-
 
 % fun = Y.*sin((X-3)*pi/4);
 % fun = ((10-Y).^3).*sin((X-1)*pi/4);
@@ -179,9 +178,8 @@ for j = 1 : m-1
     temp3 = 0;
     for i = 1 : n
         index_i = append('i_',int2str(i));
-%         temp3 = temp3 + alpha_i(index_i) * fun(j,i);
-        temp3 = temp3 + alpha_i(index_i) * fun(i,j);
-
+        temp3 = temp3 + alpha_i(index_i) * fun(j,i);
+%         temp3 = temp3 + alpha_i(index_i) * fun(i,j);
 
     end    
     index_j = append('j_',int2str(j));
@@ -193,8 +191,8 @@ for j = 1 : m-1
     temp4 = 0;
     for i = 1 : n
         index_i = append('i_',int2str(i));
-%         temp3 = temp3 + alpha_i(index_i) * fun(j,i);
-        temp3 = temp3 + alpha_i(index_i) * fun(i,j);
+        temp3 = temp3 + alpha_i(index_i) * fun(j,i);
+%         temp3 = temp3 + alpha_i(index_i) * fun(i,j);
 
     end
     index_j = append('j_',int2str(j));
@@ -203,7 +201,7 @@ end
 prob.Constraints.functionValueCnstrB = functionValueCnstrB;
 
 % Additional Constraint: fun == c (set level)
-prob.Constraints.linearityCnstr = f_a >= csntrFunVal;
+% prob.Constraints.linearityCnstr = f_a == csntrFunVal;
 % prob.Constraints.linearityCnstr2 = x_var == 47;
 
 %% --------------------\\ Optimization Solution \\-------------------------
