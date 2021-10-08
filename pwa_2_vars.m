@@ -2,7 +2,7 @@
 clearvars -except spi_temp ;
 close all;
 
-I = 201;
+I = 21;
 % Set of n coordinates on X axis: 1,...,n (x1=0, xn=6)
 n = I;
 
@@ -11,40 +11,21 @@ m = I;
 
 bigM = 100000;
 
-% bigM = 1000000;
-
-% bigM = 1000;
-
-
-% minFunVal   = -6;
-% maxValFun   = 8;
-
-% minFunVal   = 0;
-% maxValFun   = 300;
-
 minFunVal   = 0;
 maxValFun   = 300;
 
 csntrFunVal = 217;
 
 % -------------------\\ INPUT: Function fun = f(x,y) \\------------------------
-% x_min = 0;
-% x_max = 6;
-% y_min = 0;
-% y_max = 6;
+
+% x will be voltage and y current so i need to change allx with y and vice
+% versa
 
 x_min = 0;
 x_max = 6;
 
 y_min = 45;
 y_max = 50;
-
-
-% x_min = 0;
-% x_max = 1;
-% 
-% y_min = 0;
-% y_max = 1;
 
 x = linspace(x_min,x_max,n); 
 y = linspace(y_min,y_max,m); 
