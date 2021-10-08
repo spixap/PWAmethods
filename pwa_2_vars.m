@@ -4,7 +4,7 @@ clearvars; close all;
 % IN THIS VERSION sol.y REPRESENTS X AND sol.x REPRESENTS Y
 
 % Discretization points
-I = 51;
+I = 11;
 % Set of n coordinates on X axis: 1,...,n (x1=0, xn=6)
 n = I;
 % Set of m coordinates on Y axis: 1,...,m (y1=0, ym=6)
@@ -13,7 +13,7 @@ m = I;
 bigM = 100000;
 
 % Test Function Selection (1-6):
-funSlct = 6;
+funSlct = 5;
 
 
 % -------------------\\ INPUT: Function fun = f(x,y) \\------------------------
@@ -168,7 +168,7 @@ end
 prob.Constraints.functionValueCnstrB = functionValueCnstrB;
 
 % Additional Constraint: fun == c (set level)
-prob.Constraints.linearityCnstr = f_a == csntrFunVal;
+% prob.Constraints.linearityCnstr = f_a == csntrFunVal;
 %% --------------------\\ Optimization Solution \\-------------------------
 options = optimoptions('intlinprog');
 [sol,f_sol] = solve(prob,'Options',options);
