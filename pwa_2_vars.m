@@ -14,15 +14,15 @@ bigM = 100000;
 % -------------------\\ INPUT: Function fun = f(x,y) \\------------------------
 
 
-x_min = 0;
-x_max = 6;
-y_min = 0;
-y_max = 6;
+% x_min = 0;
+% x_max = 6;
+% y_min = 0;
+% y_max = 6;
 
 
 % ------x: voltage and y: current
 % ---------To check with numbers close to volateg anc current--------------
-%{
+%
 x_min = 45;
 x_max = 50;
 y_min = 0;
@@ -31,19 +31,19 @@ minFunVal   = 0;
 maxValFun   = 300;
 % csntrFunVal = 217;
 csntrFunVal = 200;
+csntrXval = 47;
 
 
 %}
 
 x = linspace(x_min,x_max,n); 
 y = linspace(y_min,y_max,m); 
-% [Z,~] = meshgrid(z,y);
 [X,Y] = meshgrid(x,y);
-% fun = Y.*X;
+fun = Y.*X;
 
 
 % Test Function Selection (1-6):
-funSlct = 2;
+funSlct = 0;
 
 % Functions to approximate:
 if funSlct == 1
@@ -79,14 +79,8 @@ elseif funSlct == 6
     csntrFunVal = 1;
 end
 z = linspace(minFunVal,maxValFun,m);
-[~,Z] = meshgrid(z,y);
-
-
-% fun = Y.*sin((X-3)*pi/4);
-% fun = ((10-Y).^3).*sin((X-1)*pi/4);
-% fun = Y + sin((X-3)*pi/4);
-% fun = Y.*sin((X-1)*pi/4);
-% fun = Y.*cos((X-1)*pi/4);
+% [~,Z] = meshgrid(z,y);
+[Z,~] = meshgrid(z,y);
 
 %% --------------------\\ Optimization Problem \\--------------------------
 prob = optimproblem('ObjectiveSense','minimize');
@@ -203,7 +197,9 @@ prob.Constraints.functionValueCnstrB = functionValueCnstrB;
 
 % Additional Constraint: fun == c (set level)
 prob.Constraints.linearityCnstr = f_a >= csntrFunVal;
-prob.Constraints.linearityCnstr2 = y_var == csntrYval;
+% prob.Constraints.linearityCnstr2 = y_var == csntrYval;
+prob.Constraints.linearityCnstr2 = x_var == csntrXval;
+
 
 %% --------------------\\ Optimization Solution \\-------------------------
 options = optimoptions('intlinprog');
@@ -215,8 +211,8 @@ s = scatter3(sol.x_var,sol.y_var,f_sol,'ro','filled','DisplayName','Optimal Poin
 
 s.SizeData = 20;
 mesh(X,Y,csntrFunVal*ones(n,m),'FaceColor','r','FaceAlpha',0.3,'EdgeColor','none','DisplayName','constraint_1');
-% mesh(47*ones(n,m),Y,Z,'FaceColor','r','FaceAlpha',0.3,'EdgeColor','none','DisplayName','constraint_2');
-mesh(X,csntrYval*ones(n,m),Z,'FaceColor','r','FaceAlpha',0.3,'EdgeColor','none','DisplayName','constraint_2');
+mesh(csntrXval*ones(n,m),Y,Z,'FaceColor','r','FaceAlpha',0.3,'EdgeColor','none','DisplayName','constraint_2');
+% mesh(X,csntrYval*ones(n,m),Z,'FaceColor','r','FaceAlpha',0.3,'EdgeColor','none','DisplayName','constraint_2');
 
 legend;
 %% -----------------------\\Validation of solution\\-------------------------
