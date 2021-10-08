@@ -2,7 +2,7 @@
 clearvars -except spi_temp ;
 close all;
 
-I = 21;
+I = 11;
 % Set of n coordinates on X axis: 1,...,n (x1=0, xn=6)
 n = I;
 
