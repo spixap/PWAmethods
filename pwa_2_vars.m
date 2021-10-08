@@ -14,12 +14,10 @@ bigM = 100000;
 % -------------------\\ INPUT: Function fun = f(x,y) \\------------------------
 
 
-
 x_min = 0;
 x_max = 6;
 y_min = 0;
 y_max = 6;
-
 
 
 % ------x: voltage and y: current
@@ -40,11 +38,11 @@ x = linspace(x_min,x_max,n);
 y = linspace(y_min,y_max,m); 
 % [Z,~] = meshgrid(z,y);
 [X,Y] = meshgrid(x,y);
-% fun = Y.*X;
+fun = Y.*X;
 
 
 % Test Function Selection (1-6):
-funSlct = 6;
+funSlct = 1;
 
 % Functions to approximate:
 if funSlct == 1
@@ -190,7 +188,7 @@ for j = 1 : m-1
     temp4 = 0;
     for i = 1 : n
         index_i = append('i_',int2str(i));
-        temp3 = temp3 + alpha_i(index_i) * fun(i,j);
+        temp4 = temp4 + alpha_i(index_i) * fun(i,j);
 
     end
     index_j = append('j_',int2str(j));
@@ -199,7 +197,7 @@ end
 prob.Constraints.functionValueCnstrB = functionValueCnstrB;
 
 % Additional Constraint: fun == c (set level)
-% prob.Constraints.linearityCnstr = f_a == csntrFunVal;
+prob.Constraints.linearityCnstr = f_a == csntrFunVal;
 % prob.Constraints.linearityCnstr2 = x_var == 47;
 
 %% --------------------\\ Optimization Solution \\-------------------------
@@ -207,7 +205,6 @@ options = optimoptions('intlinprog');
 [sol,f_sol] = solve(prob,'Options',options);
 %% -----------------------\\ Optimal Solution Plot\\-------------------------
 surf(X,Y,fun,'FaceAlpha',0.8,'DisplayName','function');xlabel('x');ylabel('y');zlabel('f(x,y)');grid on;hold on;
-% s = scatter3(sol.x_var,sol.y_var,f_sol,'ro','filled','DisplayName','Optimal Point');
 s = scatter3(sol.y_var,sol.x_var,f_sol,'ro','filled','DisplayName','Optimal Point');
 s.SizeData = 20;
 mesh(X,Y,csntrFunVal*ones(n,m),'FaceColor','r','FaceAlpha',0.3,'EdgeColor','none','DisplayName','constraint_1');
@@ -217,23 +214,13 @@ legend;
 if funSlct == 1
     f_xy = sol.y_var * sol.x_var;
 elseif funSlct == 2
-%     f_xy = sol.y_var * sin((sol.x_var - 3)*pi/4);
     f_xy = sol.x_var * sin((sol.y_var - 3)*pi/4);
-
 elseif funSlct == 3
-%     f_xy = ((10-sol.y_var).^3).*sin((sol.x_var-1)*pi/4);
     f_xy = ((10-sol.x_var).^3).*sin((sol.y_var-1)*pi/4);
-
 elseif funSlct == 4
-%     f_xy = sol.y_var + sin((sol.x_var-3)*pi/4);
     f_xy = sol.x_var + sin((sol.y_var-3)*pi/4);
-
 elseif funSlct == 5
-%     f_xy = sol.y_var * sin((sol.x_var-1)*pi/4);
     f_xy = sol.x_var * sin((sol.y_var-1)*pi/4);
-
 elseif funSlct == 6
-%     f_xy = sol.y_var * cos((sol.x_var-1)*pi/4);
     f_xy = sol.x_var * cos((sol.y_var-1)*pi/4);
-
 end
