@@ -14,22 +14,24 @@ bigM = 100000;
 % -------------------\\ INPUT: Function fun = f(x,y) \\------------------------
 
 
-x_min = 0;
-x_max = 6;
-y_min = 0;
-y_max = 6;
+% x_min = 0;
+% x_max = 6;
+% y_min = 0;
+% y_max = 6;
 
 
 % ------x: voltage and y: current
 % ---------To check with numbers close to volateg anc current--------------
-%{
+%
 x_min = 45;
 x_max = 50;
 y_min = 0;
 y_max = 6;
 minFunVal   = 0;
 maxValFun   = 300;
-csntrFunVal = 217;
+% csntrFunVal = 217;
+csntrFunVal = 200;
+
 
 z = linspace(minFunVal,maxValFun,m);
 %}
@@ -42,7 +44,7 @@ fun = Y.*X;
 
 
 % Test Function Selection (1-6):
-funSlct = 1;
+funSlct = 0;
 
 % Functions to approximate:
 if funSlct == 1
@@ -143,9 +145,9 @@ prob.Constraints.sumAlpha = sum(alpha_i) == 1;
 temp0 = 0;
 for i = 1 : n
     index_i = append('i_',int2str(i));
-    temp0 = temp0 + alpha_i(index_i) * x(i);
+    temp0 = temp0 + alpha_i(index_i) * y(i);
 end
-prob.Constraints.xValueEst = x_var == temp0;
+prob.Constraints.xValueEst = y_var == temp0;
 
 
 % ---------VARIABLE Y
@@ -154,17 +156,17 @@ prob.Constraints.xValueEst = x_var == temp0;
 temp1 = 0;
 for j = 1 : m-1
     index_j = append('j_',int2str(j));
-    temp1 = temp1 + beta_j(index_j) * y(j+1);
+    temp1 = temp1 + beta_j(index_j) * x(j+1);
 end
-prob.Constraints.slctUpperYlim = y_var <= temp1;
+prob.Constraints.slctUpperYlim = x_var <= temp1;
 
 % Lower Limit of y value for j interval
 temp2 = 0;
 for j = 1 : m-1
     index_j = append('j_',int2str(j));
-    temp2 = temp2 + beta_j(index_j) * y(j);
+    temp2 = temp2 + beta_j(index_j) * x(j);
 end
-prob.Constraints.slctLowerYlim = y_var >= temp2;
+prob.Constraints.slctLowerYlim = x_var >= temp2;
 
 % SOS1 on binaries beta
 prob.Constraints.sumBeta = sum(beta_j(1:end-1)) == 1;
@@ -205,22 +207,37 @@ options = optimoptions('intlinprog');
 [sol,f_sol] = solve(prob,'Options',options);
 %% -----------------------\\ Optimal Solution Plot\\-------------------------
 surf(X,Y,fun,'FaceAlpha',0.8,'DisplayName','function');xlabel('x');ylabel('y');zlabel('f(x,y)');grid on;hold on;
-s = scatter3(sol.y_var,sol.x_var,f_sol,'ro','filled','DisplayName','Optimal Point');
+% s = scatter3(sol.y_var,sol.x_var,f_sol,'ro','filled','DisplayName','Optimal Point');
+s = scatter3(sol.x_var,sol.y_var,f_sol,'ro','filled','DisplayName','Optimal Point');
+
 s.SizeData = 20;
 mesh(X,Y,csntrFunVal*ones(n,m),'FaceColor','r','FaceAlpha',0.3,'EdgeColor','none','DisplayName','constraint_1');
 % mesh(47*ones(n,m),Y,Z,'FaceColor','r','FaceAlpha',0.3,'EdgeColor','none','DisplayName','constraint_2');
 legend;
 %% -----------------------\\Validation of solution\\-------------------------
+% if funSlct == 1
+%     f_xy = sol.y_var * sol.x_var;
+% elseif funSlct == 2
+%     f_xy = sol.x_var * sin((sol.y_var - 3)*pi/4);
+% elseif funSlct == 3
+%     f_xy = ((10-sol.x_var).^3).*sin((sol.y_var-1)*pi/4);
+% elseif funSlct == 4
+%     f_xy = sol.x_var + sin((sol.y_var-3)*pi/4);
+% elseif funSlct == 5
+%     f_xy = sol.x_var * sin((sol.y_var-1)*pi/4);
+% elseif funSlct == 6
+%     f_xy = sol.x_var * cos((sol.y_var-1)*pi/4);
+% end
 if funSlct == 1
     f_xy = sol.y_var * sol.x_var;
 elseif funSlct == 2
-    f_xy = sol.x_var * sin((sol.y_var - 3)*pi/4);
+    f_xy = sol.y_var * sin((sol.x_var - 3)*pi/4);
 elseif funSlct == 3
-    f_xy = ((10-sol.x_var).^3).*sin((sol.y_var-1)*pi/4);
+    f_xy = ((10-sol.y_var).^3).*sin((sol.x_var-1)*pi/4);
 elseif funSlct == 4
-    f_xy = sol.x_var + sin((sol.y_var-3)*pi/4);
+    f_xy = sol.y_var + sin((sol.x_var-3)*pi/4);
 elseif funSlct == 5
-    f_xy = sol.x_var * sin((sol.y_var-1)*pi/4);
+    f_xy = sol.y_var * sin((sol.x_var-1)*pi/4);
 elseif funSlct == 6
-    f_xy = sol.x_var * cos((sol.y_var-1)*pi/4);
+    f_xy = sol.y_var * cos((sol.x_var-1)*pi/4);
 end
