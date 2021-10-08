@@ -44,7 +44,7 @@ y = linspace(y_min,y_max,m);
 
 
 % Test Function Selection (1-6):
-funSlct = 2;
+funSlct = 6;
 
 % Functions to approximate:
 if funSlct == 1
@@ -56,7 +56,7 @@ elseif funSlct == 2
     fun = Y.*sin((X-3)*pi/4);
     minFunVal   = -6;
     maxValFun   = 6;
-    csntrFunVal = 0;
+    csntrFunVal = 3;
 elseif funSlct == 3
     fun = ((10-Y).^3).*sin((X-1)*pi/4);
     minFunVal   = -800;
@@ -158,7 +158,7 @@ for j = 1 : m-1
     index_j = append('j_',int2str(j));
     temp1 = temp1 + beta_j(index_j) * y(j+1);
 end
-prob.Constraints.slctUpperYlim = y_var <= temp1 - 2*10^(-4) ;
+prob.Constraints.slctUpperYlim = y_var <= temp1;
 
 % Lower Limit of y value for j interval
 temp2 = 0;
@@ -178,8 +178,7 @@ for j = 1 : m-1
     temp3 = 0;
     for i = 1 : n
         index_i = append('i_',int2str(i));
-        temp3 = temp3 + alpha_i(index_i) * fun(j,i);
-%         temp3 = temp3 + alpha_i(index_i) * fun(i,j);
+        temp3 = temp3 + alpha_i(index_i) * fun(i,j);
 
     end    
     index_j = append('j_',int2str(j));
@@ -191,8 +190,7 @@ for j = 1 : m-1
     temp4 = 0;
     for i = 1 : n
         index_i = append('i_',int2str(i));
-        temp3 = temp3 + alpha_i(index_i) * fun(j,i);
-%         temp3 = temp3 + alpha_i(index_i) * fun(i,j);
+        temp3 = temp3 + alpha_i(index_i) * fun(i,j);
 
     end
     index_j = append('j_',int2str(j));
@@ -209,8 +207,8 @@ options = optimoptions('intlinprog');
 [sol,f_sol] = solve(prob,'Options',options);
 %% -----------------------\\ Optimal Solution Plot\\-------------------------
 surf(X,Y,fun,'FaceAlpha',0.8,'DisplayName','function');xlabel('x');ylabel('y');zlabel('f(x,y)');grid on;hold on;
-s = scatter3(sol.x_var,sol.y_var,f_sol,'ro','filled','DisplayName','Optimal Point');
-% s = scatter3(sol.y_var,sol.x_var,f_sol,'ro','filled','DisplayName','Optimal Point');
+% s = scatter3(sol.x_var,sol.y_var,f_sol,'ro','filled','DisplayName','Optimal Point');
+s = scatter3(sol.y_var,sol.x_var,f_sol,'ro','filled','DisplayName','Optimal Point');
 s.SizeData = 20;
 mesh(X,Y,csntrFunVal*ones(n,m),'FaceColor','r','FaceAlpha',0.3,'EdgeColor','none','DisplayName','constraint_1');
 % mesh(47*ones(n,m),Y,Z,'FaceColor','r','FaceAlpha',0.3,'EdgeColor','none','DisplayName','constraint_2');
@@ -219,13 +217,23 @@ legend;
 if funSlct == 1
     f_xy = sol.y_var * sol.x_var;
 elseif funSlct == 2
-    f_xy = sol.y_var * sin((sol.x_var - 3)*pi/4);
+%     f_xy = sol.y_var * sin((sol.x_var - 3)*pi/4);
+    f_xy = sol.x_var * sin((sol.y_var - 3)*pi/4);
+
 elseif funSlct == 3
-    f_xy = ((10-sol.y_var).^3).*sin((sol.x_var-1)*pi/4);
+%     f_xy = ((10-sol.y_var).^3).*sin((sol.x_var-1)*pi/4);
+    f_xy = ((10-sol.x_var).^3).*sin((sol.y_var-1)*pi/4);
+
 elseif funSlct == 4
-    f_xy = sol.y_var + sin((sol.x_var-3)*pi/4);
+%     f_xy = sol.y_var + sin((sol.x_var-3)*pi/4);
+    f_xy = sol.x_var + sin((sol.y_var-3)*pi/4);
+
 elseif funSlct == 5
-    f_xy = sol.y_var * sin((sol.x_var-1)*pi/4);
+%     f_xy = sol.y_var * sin((sol.x_var-1)*pi/4);
+    f_xy = sol.x_var * sin((sol.y_var-1)*pi/4);
+
 elseif funSlct == 6
-    f_xy = sol.y_var * cos((sol.x_var-1)*pi/4);
+%     f_xy = sol.y_var * cos((sol.x_var-1)*pi/4);
+    f_xy = sol.x_var * cos((sol.y_var-1)*pi/4);
+
 end
