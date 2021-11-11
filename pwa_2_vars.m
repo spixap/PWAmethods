@@ -5,7 +5,6 @@ close all;
 I = 11;
 % Set of n coordinates on X axis: 1,...,n (x1=0, xn=6)
 n = I;
-
 % Set of m coordinates on Y axis: 1,...,m (y1=0, ym=6)
 m = I;
 
@@ -62,7 +61,6 @@ end
 % y = linspace(y_min,y_max,m); 
 % [X,Y] = meshgrid(x,y);
         
-
 % Functions to approximate:
 if funSlct == 1
     fun = Y.*X;
@@ -85,7 +83,7 @@ elseif funSlct == 4
     minFunVal   = -1;
     maxValFun   = 7;
     csntrFunVal = 2;
-elseif funSlct == 5
+elseif funSlct == 5 
     fun = Y.*sin((X-1)*pi/4);
     minFunVal   = -6;
     maxValFun   = 6;
@@ -254,4 +252,21 @@ elseif funSlct == 5
     f_xy = sol.y_var * sin((sol.x_var-1)*pi/4);
 elseif funSlct == 6
     f_xy = sol.y_var * cos((sol.x_var-1)*pi/4);
+mesh(X,Y,fun,'DisplayName','function');xlabel('x');ylabel('y');zlabel('f(x,y)');grid on;hold on;
+scatter3(sol.y_var,sol.x_var,f_sol,'ro','filled','DisplayName','Optimal Point');
+% scatter3(sol.x_var,sol.y_var,f_sol,'ro','filled','DisplayName','Optimal Point');
+surf(X,Y,csntrFunVal*ones(n,m),'DisplayName','constraint');legend;
+%% -----------------------\\Validation of solution\\-------------------------
+if funSlct == 1
+    f_xy = sol.x_var * sol.y_var;
+elseif funSlct == 2
+    f_xy = sol.x_var * sin((sol.y_var - 3)*pi/4);
+elseif funSlct == 3
+    f_xy = ((10-sol.x_var).^3).*sin((sol.y_var-1)*pi/4);
+elseif funSlct == 4
+    f_xy = sol.x_var + sin((sol.y_var-3)*pi/4);
+elseif funSlct == 5 
+    f_xy = sol.x_var * sin((sol.y_var-1)*pi/4);
+elseif funSlct == 6
+    f_xy = sol.x_var * cos((sol.y_var-1)*pi/4);
 end
