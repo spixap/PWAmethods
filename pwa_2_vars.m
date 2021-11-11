@@ -43,7 +43,7 @@ fun = Y.*X;
 
 
 % Test Function Selection (1-6):
-funSlct = 0;
+funSlct = 2;
 
 % Functions to approximate:
 if funSlct == 1
