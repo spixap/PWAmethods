@@ -241,23 +241,6 @@ end
 legend;
 %% -----------------------\\Validation of solution\\-------------------------
 if funSlct == 1
-    f_xy = sol.y_var * sol.x_var;
-elseif funSlct == 2
-    f_xy = sol.y_var * sin((sol.x_var - 3)*pi/4);
-elseif funSlct == 3
-    f_xy = ((10-sol.y_var).^3).*sin((sol.x_var-1)*pi/4);
-elseif funSlct == 4
-    f_xy = sol.y_var + sin((sol.x_var-3)*pi/4);
-elseif funSlct == 5
-    f_xy = sol.y_var * sin((sol.x_var-1)*pi/4);
-elseif funSlct == 6
-    f_xy = sol.y_var * cos((sol.x_var-1)*pi/4);
-mesh(X,Y,fun,'DisplayName','function');xlabel('x');ylabel('y');zlabel('f(x,y)');grid on;hold on;
-scatter3(sol.y_var,sol.x_var,f_sol,'ro','filled','DisplayName','Optimal Point');
-% scatter3(sol.x_var,sol.y_var,f_sol,'ro','filled','DisplayName','Optimal Point');
-surf(X,Y,csntrFunVal*ones(n,m),'DisplayName','constraint');legend;
-%% -----------------------\\Validation of solution\\-------------------------
-if funSlct == 1
     f_xy = sol.x_var * sol.y_var;
 elseif funSlct == 2
     f_xy = sol.x_var * sin((sol.y_var - 3)*pi/4);
