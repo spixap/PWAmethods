@@ -12,38 +12,56 @@ m = I;
 bigM = 100000;
 
 % -------------------\\ INPUT: Function fun = f(x,y) \\------------------------
+ 
+% % ------x: voltage and y: current
 
+% Test Function Selection (1-6):
+funSlct = 6;
+varRanges = 'physical'; % {'physical','paper'}
 
-% x_min = 0;
-% x_max = 6;
-% y_min = 0;
-% y_max = 6;
-
-
-% ------x: voltage and y: current
-% ---------To check with numbers close to volateg anc current--------------
-%
-x_min = 45;
-x_max = 50;
-y_min = 0;
-y_max = 6;
-minFunVal   = 0;
-maxValFun   = 300;
-% csntrFunVal = 217;
-csntrFunVal = 200;
-csntrXval = 47;
+if funSlct == 1
+    if strcmp(varRanges,'physical') == 1
+        x_min = 45;
+        x_max = 50;
+        y_min = 0;
+        y_max = 6;
+        minFunVal   = 0;
+        maxValFun   = 300;
+        csntrFunVal = 200;
+        csntrXval = 47;
+        x = linspace(x_min,x_max,n);
+        y = linspace(y_min,y_max,m);
+        [X,Y] = meshgrid(x,y);
+    elseif strcmp(varRanges,'paper') == 1
+        x_min = 0;
+        x_max = 6;
+        y_min = 0;
+        y_max = 6;
+        minFunVal   = 0;
+        maxValFun   = 300;
+        csntrFunVal = 200;
+        csntrXval = 5;
+        x = linspace(x_min,x_max,n);
+        y = linspace(y_min,y_max,m);
+        [X,Y] = meshgrid(x,y);
+    end
+else
+    x_min = 0;
+    x_max = 6;
+    y_min = 0;
+    y_max = 6;
+    x = linspace(x_min,x_max,n);
+    y = linspace(y_min,y_max,m);
+    [X,Y] = meshgrid(x,y);
+end
 
 
 %}
 
-x = linspace(x_min,x_max,n); 
-y = linspace(y_min,y_max,m); 
-[X,Y] = meshgrid(x,y);
-fun = Y.*X;
-
-
-% Test Function Selection (1-6):
-funSlct = 2;
+% x = linspace(x_min,x_max,n); 
+% y = linspace(y_min,y_max,m); 
+% [X,Y] = meshgrid(x,y);
+        
 
 % Functions to approximate:
 if funSlct == 1
@@ -197,8 +215,12 @@ prob.Constraints.functionValueCnstrB = functionValueCnstrB;
 
 % Additional Constraint: fun == c (set level)
 prob.Constraints.linearityCnstr = f_a >= csntrFunVal;
-% prob.Constraints.linearityCnstr2 = y_var == csntrYval;
-prob.Constraints.linearityCnstr2 = x_var == csntrXval;
+
+if funSlct == 1
+    prob.Constraints.linearityCnstr2 = x_var == csntrXval;
+elseif funSlct == 2
+    prob.Constraints.linearityCnstr2 = y_var == csntrYval;
+end
 
 
 %% --------------------\\ Optimization Solution \\-------------------------
@@ -211,8 +233,12 @@ s = scatter3(sol.x_var,sol.y_var,f_sol,'ro','filled','DisplayName','Optimal Poin
 
 s.SizeData = 20;
 mesh(X,Y,csntrFunVal*ones(n,m),'FaceColor','r','FaceAlpha',0.3,'EdgeColor','none','DisplayName','constraint_1');
-mesh(csntrXval*ones(n,m),Y,Z,'FaceColor','r','FaceAlpha',0.3,'EdgeColor','none','DisplayName','constraint_2');
-% mesh(X,csntrYval*ones(n,m),Z,'FaceColor','r','FaceAlpha',0.3,'EdgeColor','none','DisplayName','constraint_2');
+
+if funSlct == 1
+    mesh(csntrXval*ones(n,m),Y,Z,'FaceColor','r','FaceAlpha',0.3,'EdgeColor','none','DisplayName','constraint_2');
+elseif funSlct == 2
+    mesh(X,csntrYval*ones(n,m),Z,'FaceColor','r','FaceAlpha',0.3,'EdgeColor','none','DisplayName','constraint_2');
+end
 
 legend;
 %% -----------------------\\Validation of solution\\-------------------------
