@@ -168,7 +168,7 @@ end
 prob.Constraints.functionValueCnstrB = functionValueCnstrB;
 
 % Additional Constraint: fun == c (set level)
-% prob.Constraints.linearityCnstr = f_a == csntrFunVal;
+prob.Constraints.linearityCnstr = f_a == csntrFunVal;
 %% --------------------\\ Optimization Solution \\-------------------------
 options = optimoptions('intlinprog');
 [sol,f_sol] = solve(prob,'Options',options);
