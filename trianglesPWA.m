@@ -3,7 +3,7 @@
 clearvars -except spi_temp;
 close all;
 
-I = 11; % 200
+I = 31; % 200
 % Set of n coordinates on X axis: 1,...,n (x1=0, xn=6)
 n = I;
 % Set of m coordinates on Y axis: 1,...,m (y1=0, ym=6)
@@ -16,7 +16,7 @@ bigM = 100000;
 % % ------x: voltage and y: current
 
 % Test Function Selection (1-6):
-funSlct = 1;
+funSlct = 5;
 varRanges = 'paper'; % {'physical','paper'}
 activeCstrX = 1;
 activeCstrY = 1;
@@ -162,113 +162,109 @@ prob = optimproblem('ObjectiveSense','minimize');
 % -------------------\\ Optimization Variables \\--------------------------
 y_var   = optimvar('y_var','LowerBound',y_min,'UpperBound',y_max);
 x_var   = optimvar('x_var','LowerBound',x_min,'UpperBound',x_max);
-
-beta_j  = optimvar('beta',m,'Type','integer','LowerBound',0,'UpperBound',1);
-h_i     = optimvar('h',n+1,'Type','integer','LowerBound',0,'UpperBound',1);
-alpha_i = optimvar('alpha',n,'LowerBound',0,'UpperBound',1);
 f_a     = optimvar('f_a','LowerBound',minFunVal,'UpperBound',maxValFun);
 
 
+h_u_ij   = optimvar('h_u',n+1,m+1,'Type','integer','LowerBound',0,'UpperBound',1);
+h_l_ij   = optimvar('h_l',n+1,m+1,'Type','integer','LowerBound',0,'UpperBound',1);
+
+alpha_ij = optimvar('alpha',n,m,'LowerBound',0,'UpperBound',1);
+
+
 % Naming variables indexes
-indexNames_i = cell(n,1);
-indexNames_j = cell(m,1);
-indexNames_h = cell(n+1,1);
-
-for i = 1 : n
-    indexNames_i{i,1} = append('i_',int2str(i));
+indexNames = cell(1, n+1 + m+1);
+p = 1;
+while p <= n+1 + m+1
+    while p <= n+1
+        indexNames{p} = append('i_',int2str(p-1));
+        p=p+1;
+    end
+    while p <= n+1 + m+1
+        indexNames{p} = append('j_',int2str(p-(n+1+1)));
+        p=p+1;
+    end
 end
-for j = 1 : m
-    indexNames_j{j,1} = append('j_',int2str(j));
-end
-for i = 1 : n+1
-    indexNames_h{i,1} = append('i_',int2str(i-1));
-end
 
-beta_j.IndexNames{1} = indexNames_j;
-h_i.IndexNames{1} = indexNames_h;
-alpha_i.IndexNames{1} = indexNames_i;
-
+for p = 1:2
+    if p==1
+        h_u_ij.IndexNames{p}     = indexNames(1,1:n+1);
+        h_l_ij.IndexNames{p}     = indexNames(1,1:n+1);
+        alpha_ij.IndexNames{p} = indexNames(1,2:n+1);
+    elseif p==2
+        h_u_ij.IndexNames{p}     = indexNames(1,n+1+1 : n+1 + m+1);
+        h_l_ij.IndexNames{p}     = indexNames(1,n+1+1 : n+1 + m+1);
+        alpha_ij.IndexNames{p} = indexNames(1,n+1+1+1 : n+1 + m+1);
+    end
+end
+%%
 % -------------------\\ Optimization Objective \\--------------------------
 prob.Objective = f_a;
 % -------------------\\ Optimization Constraints \\------------------------
 
 % -----------VARIABLE X
-alphaCnstr = optimconstr(n);
-functionValueCnstrA = optimconstr(m-1);
-functionValueCnstrB = optimconstr(m-1);
+alphaCnstr = optimconstr(n,m);
+% functionValueCnstrA = optimconstr(m-1);
+% functionValueCnstrB = optimconstr(m-1);
 
-% SOS1 on binaries h
-prob.Constraints.hSOS1a = h_i(1) == 0;
-prob.Constraints.hSOS1b = h_i(end) == 0;
-prob.Constraints.hSOS1c = sum(h_i(2:end-1)) == 1;
+% SOS3 on binaries h_u and h_l
+prob.Constraints.huSOS3a = h_u_ij(1,:) == 0;
+prob.Constraints.huSOS3b = h_u_ij(:,1) == 0;
+
+prob.Constraints.huSOS3c = h_u_ij(:,end) == 0;
+prob.Constraints.huSOS3d = h_u_ij(end,:) == 0;
+
+prob.Constraints.hlSOS3a = h_l_ij(1,:) == 0;
+prob.Constraints.hlSOS3b = h_l_ij(:,1) == 0;
+
+prob.Constraints.hlSOS3c = h_l_ij(:,end) == 0;
+prob.Constraints.hlSOS3d = h_l_ij(end,:) == 0;
+
+prob.Constraints.hSOS3 = sum(sum((h_u_ij(2:end-1,2:end-1) + h_l_ij(2:end-1,2:end-1)))) == 1;
+
+% Sum of alphas is 1 (convexity)
+prob.Constraints.sumAlpha = sum(sum(alpha_ij)) == 1;
+
+% x value estimation
+tempX = 0;
+for j = 1 : m
+    index_j = append('j_',int2str(j));
+    tempX = tempX + y * alpha_ij(:,index_j);
+end
+prob.Constraints.xValueEst = y_var == tempX;
+
+% y value estimation
+tempY = 0;
+for i = 1 : n
+    index_i = append('i_',int2str(i));
+    tempY = tempY + alpha_ij(index_i,:) * x';
+end
+prob.Constraints.yValueEst = x_var == tempY;
+
+% Value function approximation f^a
+tempF = 0;
+for i = 1 : n
+    for j = 1 : m
+        index_i = append('i_',int2str(i));
+        index_j = append('j_',int2str(j));
+        
+        tempF = tempF + alpha_ij(index_i,index_j) * fun(i,j) ;
+    end
+end
+prob.Constraints.functionValueCnstr = f_a == tempF;
 
 % Linear weights constraints
 for i = 1 : n
-    index_i = append('i_',int2str(i));
-    index_i_prev = append('i_',int2str(i-1));
-    alphaCnstr(i) = alpha_i(index_i) <= h_i(index_i_prev) + h_i(index_i) ;
+    for j = 1 : m
+        index_i = append('i_',int2str(i));
+        index_i_prev = append('i_',int2str(i-1));
+        index_j = append('j_',int2str(j));
+        index_j_prev = append('j_',int2str(j-1));
+        alphaCnstr(i,j) = alpha_ij(index_i,index_j) <= h_u_ij(index_i,index_j) + h_l_ij(index_i,index_j)+...
+                                                       h_u_ij(index_i,index_j_prev) + h_l_ij(index_i_prev,index_j_prev)+...
+                                                       h_u_ij(index_i_prev,index_j_prev) + h_l_ij(index_i_prev,index_j);
+    end
 end
 prob.Constraints.alphaCnstr = alphaCnstr;
-
-% Sum of alphas is 1 (convexity)
-prob.Constraints.sumAlpha = sum(alpha_i) == 1;
-
-% x value estimation
-temp0 = 0;
-for i = 1 : n
-    index_i = append('i_',int2str(i));
-    temp0 = temp0 + alpha_i(index_i) * y(i);
-end
-prob.Constraints.xValueEst = y_var == temp0;
-
-
-% ---------VARIABLE Y
-
-% Upper Limit of y value for j interval
-temp1 = 0;
-for j = 1 : m-1
-    index_j = append('j_',int2str(j));
-    temp1 = temp1 + beta_j(index_j) * x(j+1);
-end
-prob.Constraints.slctUpperYlim = x_var <= temp1;
-
-% Lower Limit of y value for j interval
-temp2 = 0;
-for j = 1 : m-1
-    index_j = append('j_',int2str(j));
-    temp2 = temp2 + beta_j(index_j) * x(j);
-end
-prob.Constraints.slctLowerYlim = x_var >= temp2;
-
-% SOS1 on binaries beta
-prob.Constraints.sumBeta = sum(beta_j(1:end-1)) == 1;
-
-% ---------VALUE FUNCTION
-% Lower Limit of function approximation f_a for j interval
-
-for j = 1 : m-1
-    temp3 = 0;
-    for i = 1 : n
-        index_i = append('i_',int2str(i));
-        temp3 = temp3 + alpha_i(index_i) * fun(i,j);
-
-    end    
-    index_j = append('j_',int2str(j));
-    functionValueCnstrA(j) = f_a <= temp3 + bigM * (1-beta_j(index_j));
-end
-prob.Constraints.functionValueCnstrA = functionValueCnstrA;
-
-for j = 1 : m-1
-    temp4 = 0;
-    for i = 1 : n
-        index_i = append('i_',int2str(i));
-        temp4 = temp4 + alpha_i(index_i) * fun(i,j);
-
-    end
-    index_j = append('j_',int2str(j));
-    functionValueCnstrB(j) = f_a >= temp4 - bigM * (1-beta_j(index_j));
-end
-prob.Constraints.functionValueCnstrB = functionValueCnstrB;
 
 % Additional Constraint: fun == c (set level)
 prob.Constraints.linearityCnstr = f_a >= csntrFunVal;
