@@ -2,7 +2,7 @@
 clearvars -except spi_temp ;
 close all;
 
-I = 11;
+I = 11; % 200
 % Set of n coordinates on X axis: 1,...,n (x1=0, xn=6)
 n = I;
 % Set of m coordinates on Y axis: 1,...,m (y1=0, ym=6)
@@ -15,8 +15,11 @@ bigM = 100000;
 % % ------x: voltage and y: current
 
 % Test Function Selection (1-6):
-funSlct = 2;
-varRanges = 'physical'; % {'physical','paper'}
+funSlct = 1;
+varRanges = 'paper'; % {'physical','paper'}
+activeCstrX = 1;
+activeCstrY = 1;
+
 
 if funSlct == 1
     if strcmp(varRanges,'physical') == 1
@@ -37,13 +40,16 @@ if funSlct == 1
         y_min = 0;
         y_max = 6;
         minFunVal   = 0;
-        maxValFun   = 300;
-        csntrFunVal = 200;
+        maxValFun   = 40;
+        csntrFunVal = 10;
         csntrXval = 5;
         x = linspace(x_min,x_max,n);
         y = linspace(y_min,y_max,m);
         [X,Y] = meshgrid(x,y);
     end
+    
+    z = linspace(minFunVal,maxValFun,m);
+    [Z,~] = meshgrid(z,y);                  % level x = C
 else
     x_min = 0;
     x_max = 6;
@@ -58,7 +64,7 @@ end
 if funSlct == 1
     fun = Y.*X;
     minFunVal   = 0;
-    maxValFun   = 50;
+    maxValFun   = 40;
     csntrFunVal = 15;
 elseif funSlct == 2
     fun = Y.*sin((X-3)*pi/4);
@@ -66,29 +72,89 @@ elseif funSlct == 2
     maxValFun   = 6;
     csntrFunVal = 3;
     csntrYval   = 3.1;
+    z = linspace(minFunVal,maxValFun,m); 
+    [~,Z] = meshgrid(z,y);                  % level y = C
 elseif funSlct == 3
     fun = ((10-Y).^3).*sin((X-1)*pi/4);
     minFunVal   = -800;
     maxValFun   = 1000;
     csntrFunVal = -800;
+    if (activeCstrX == 1) && (activeCstrY == 0)
+       csntrXval = 2;
+       z = linspace(minFunVal,maxValFun,m);
+       [Z,~] = meshgrid(z,y);                  % level x = C
+    elseif (activeCstrY == 1) && (activeCstrX == 0)
+        csntrYval = 2;
+        z = linspace(minFunVal,maxValFun,m); 
+        [~,Z] = meshgrid(x,z);                  % level y = C
+    elseif (activeCstrX == 1) && (activeCstrY == 1)
+        csntrXval = 2;
+        csntrYval = 2;
+        z = linspace(minFunVal,maxValFun,m);
+        [Zx,~] = meshgrid(z,y); 
+        [~,Zy] = meshgrid(x,z); 
+    end
 elseif funSlct == 4
     fun = Y + sin((X-3)*pi/4);
     minFunVal   = -1;
     maxValFun   = 7;
     csntrFunVal = 2;
+   if (activeCstrX == 1) && (activeCstrY == 0)
+       csntrXval = 2;
+       z = linspace(minFunVal,maxValFun,m);
+       [Z,~] = meshgrid(z,y);                  % level x = C
+    elseif (activeCstrY == 1) && (activeCstrX == 0)
+        csntrYval = 2;
+        z = linspace(minFunVal,maxValFun,m); 
+        [~,Z] = meshgrid(x,z);                  % level y = C
+    elseif (activeCstrX == 1) && (activeCstrY == 1)
+        csntrXval = 2;
+        csntrYval = 2;
+        z = linspace(minFunVal,maxValFun,m);
+        [Zx,~] = meshgrid(z,y); 
+        [~,Zy] = meshgrid(x,z); 
+    end
 elseif funSlct == 5 
     fun = Y.*sin((X-1)*pi/4);
     minFunVal   = -6;
     maxValFun   = 6;
     csntrFunVal = 1;
+    if (activeCstrX == 1) && (activeCstrY == 0)
+       csntrXval = 2;
+       z = linspace(minFunVal,maxValFun,m);
+       [Z,~] = meshgrid(z,y);                  % level x = C
+    elseif (activeCstrY == 1) && (activeCstrX == 0)
+        csntrYval = 2;
+        z = linspace(minFunVal,maxValFun,m); 
+        [~,Z] = meshgrid(x,z);                  % level y = C
+    elseif (activeCstrX == 1) && (activeCstrY == 1)
+        csntrXval = 2;
+        csntrYval = 2;
+        z = linspace(minFunVal,maxValFun,m);
+        [Zx,~] = meshgrid(z,y); 
+        [~,Zy] = meshgrid(x,z); 
+    end
 elseif funSlct == 6
     fun = Y.*cos((X-1)*pi/4);
     minFunVal   = -6;
     maxValFun   = 6;
     csntrFunVal = 1;
+    if (activeCstrX == 1) && (activeCstrY == 0)
+       csntrXval = 2;
+       z = linspace(minFunVal,maxValFun,m);
+       [Z,~] = meshgrid(z,y);                  % level x = C
+    elseif (activeCstrY == 1) && (activeCstrX == 0)
+        csntrYval = 2;
+        z = linspace(minFunVal,maxValFun,m); 
+        [~,Z] = meshgrid(x,z);                  % level y = C
+    elseif (activeCstrX == 1) && (activeCstrY == 1)
+        csntrXval = 2;
+        csntrYval = 2;
+        z = linspace(minFunVal,maxValFun,m);
+        [Zx,~] = meshgrid(z,y); 
+        [~,Zy] = meshgrid(x,z); 
+    end
 end
-z = linspace(minFunVal,maxValFun,m);
-[Z,~] = meshgrid(z,y);
 
 %% --------------------\\ Optimization Problem \\--------------------------
 prob = optimproblem('ObjectiveSense','minimize');
@@ -210,40 +276,44 @@ if funSlct == 1
     prob.Constraints.linearityCnstr2 = x_var == csntrXval;
 elseif funSlct == 2
     prob.Constraints.linearityCnstr2 = y_var == csntrYval;
+else
+    if (activeCstrX == 1) && (activeCstrY == 0)
+        prob.Constraints.linearityCnstr2 = x_var == csntrXval;
+    elseif (activeCstrY == 1) && (activeCstrX == 0)
+        prob.Constraints.linearityCnstr2 = y_var == csntrYval;
+    elseif (activeCstrX == 1) && (activeCstrY == 1)
+        prob.Constraints.linearityCnstr2 = x_var == csntrXval;
+        prob.Constraints.linearityCnstr3 = y_var == csntrYval;
+    end
 end
+
 
 %% --------------------\\ Optimization Solution \\-------------------------
 options = optimoptions('intlinprog');
 [sol,f_sol] = solve(prob,'Options',options);
 %% -----------------------\\ Optimal Solution Plot\\-------------------------
-surf(X,Y,fun,'FaceAlpha',0.8,'DisplayName','function');xlabel('x');ylabel('y');zlabel('f(x,y)');grid on;hold on;
-s = scatter3(sol.x_var,sol.y_var,f_sol,'ro','filled','DisplayName','Optimal Point');
+p = surf(X,Y,fun,'FaceAlpha',0.8,'DisplayName','function');xlabel('x');ylabel('y');zlabel('f(x,y)');grid on;hold on;
+s = scatter3(sol.x_var,sol.y_var,f_sol,'ro','filled','DisplayName','f_{xy}^*');
 
 s.SizeData = 40;
-mesh(X,Y,csntrFunVal*ones(n,m),'FaceColor','r','FaceAlpha',0.3,'EdgeColor','none','DisplayName','constraint_1');
+c1 = mesh(X,Y,csntrFunVal*ones(n,m),'FaceColor','r','FaceAlpha',0.3,'EdgeColor','none','DisplayName','constraint_1');
 
 if funSlct == 1
-    mesh(csntrXval*ones(n,m),Y,Z,'FaceColor','r','FaceAlpha',0.3,'EdgeColor','none','DisplayName','constraint_2');
+    c2 = mesh(csntrXval*ones(n,m),Y,Z,'FaceColor','r','FaceAlpha',0.3,'EdgeColor','none','DisplayName','constraint_2');
 elseif funSlct == 2
-    mesh(X,csntrYval*ones(n,m),Z,'FaceColor','r','FaceAlpha',0.3,'EdgeColor','none','DisplayName','constraint_2');
+    c2 = mesh(X,csntrYval*ones(n,m),Z,'FaceColor','r','FaceAlpha',0.3,'EdgeColor','none','DisplayName','constraint_2');
+else
+    if (activeCstrX == 1) && (activeCstrY == 0)
+        c2 = mesh(csntrXval*ones(n,m),Y,Z,'FaceColor','r','FaceAlpha',0.3,'EdgeColor','none','DisplayName','constraint_2');
+    elseif (activeCstrY == 1) && (activeCstrX == 0)
+        c2 = mesh(X,csntrYval*ones(n,m),Z,'FaceColor','r','FaceAlpha',0.3,'EdgeColor','none','DisplayName','constraint_2');
+    elseif (activeCstrX == 1) && (activeCstrY == 1)
+        c2 = mesh(csntrXval*ones(n,m),Y,Zx,'FaceColor','r','FaceAlpha',0.3,'EdgeColor','none','DisplayName','constraint_2');
+        c3 = mesh(X,csntrYval*ones(n,m),Zy,'FaceColor','r','FaceAlpha',0.3,'EdgeColor','none','DisplayName','constraint_3');
+    end
 end
 
-% legend;
 %% -----------------------\\Validation of solution\\-------------------------
-% if funSlct == 1
-%     f_xy = sol.x_var * sol.y_var;
-% elseif funSlct == 2
-%     f_xy = sol.x_var * sin((sol.y_var - 3)*pi/4);
-% elseif funSlct == 3
-%     f_xy = ((10-sol.x_var).^3).*sin((sol.y_var-1)*pi/4);
-% elseif funSlct == 4
-%     f_xy = sol.x_var + sin((sol.y_var-3)*pi/4);
-% elseif funSlct == 5 
-%     f_xy = sol.x_var * sin((sol.y_var-1)*pi/4);
-% elseif funSlct == 6
-%     f_xy = sol.x_var * cos((sol.y_var-1)*pi/4);
-% end
-
 if funSlct == 1
     f_xy = sol.y_var * sol.x_var;
 elseif funSlct == 2
@@ -258,6 +328,28 @@ elseif funSlct == 6
     f_xy = sol.y_var * cos((sol.x_var-1)*pi/4);
 end
 
-f = scatter3(sol.x_var,sol.y_var,f_xy,20,'b*','DisplayName','f_{xy}validation');
+f = scatter3(sol.x_var,sol.y_var,f_xy,20,'b*','DisplayName','f(x^*,y^*)');
 
-legend;
+if funSlct == 1
+    legend([p,s,c1,c2,f],{'$f(x,y)$','$\hat{f}_{xy}^*$',['$f \ge',num2str(csntrFunVal),'$'],['$x =',num2str(csntrXval),'$'],'$f(x^*,y^*)$'},'FontSize',12,...
+        'Fontname','Times New Roman','NumColumns',1,'interpreter','latex','Location','northeastoutside');
+elseif funSlct == 2
+    legend([p,s,c1,c2,f],{'$f(x,y)$','$\hat{f}_{xy}^*$',['$f \ge',num2str(csntrFunVal),'$'],['$y =',num2str(csntrYval),'$'],'$f(x^*,y^*)$'},'FontSize',12,...
+        'Fontname','Times New Roman','NumColumns',1,'interpreter','latex','Location','northeastoutside');
+else
+    
+    if (activeCstrX == 1) && (activeCstrY == 0)
+        legend([p,s,c1,c2,f],{'$f(x,y)$','$\hat{f}_{xy}^*$',['$f \ge',num2str(csntrFunVal),'$'],['$x =',num2str(csntrXval),'$'],'$f(x^*,y^*)$'},'FontSize',12,...
+            'Fontname','Times New Roman','NumColumns',1,'interpreter','latex','Location','northeastoutside');
+    elseif (activeCstrY == 1) && (activeCstrX == 0)
+        legend([p,s,c1,c2,f],{'$f(x,y)$','$\hat{f}_{xy}^*$',['$f \ge',num2str(csntrFunVal),'$'],['$y =',num2str(csntrYval),'$'],'$f(x^*,y^*)$'},'FontSize',12,...
+            'Fontname','Times New Roman','NumColumns',1,'interpreter','latex','Location','northeastoutside');
+    elseif (activeCstrX == 1) && (activeCstrY == 1)
+        legend([p,s,c1,c2,c3,f],{'$f(x,y)$','$\hat{f}_{xy}^*$',['$f \ge',num2str(csntrFunVal),'$'],['$x =',num2str(csntrXval),'$'],...
+            ['$y =',num2str(csntrYval),'$'],'$f(x^*,y^*)$'},'FontSize',12,...
+            'Fontname','Times New Roman','NumColumns',1,'interpreter','latex','Location','northeastoutside');
+    else
+        legend([p,s,c1,f],{'$f(x,y)$','$\hat{f}_{xy}^*$',['$f \ge',num2str(csntrFunVal),'$'],'$f(x^*,y^*)$'},'FontSize',12,...
+            'Fontname','Times New Roman','NumColumns',1,'interpreter','latex','Location','northeastoutside');
+    end
+end
