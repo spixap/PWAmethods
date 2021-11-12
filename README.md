@@ -5,14 +5,19 @@
 
 _D’Ambrosio, C., Lodi, A., Martello, S., 2010. "Piecewise linear approximation of functions of two variables in MILP models". Operations Research Letters 38, 39–46._ 
 
+
+ ###  INPUTS ### 
+  * `I` &nbsp; set of discretization points
+  * `funSlct` &nbsp; function selection to test % {1,2,3,4,5,6}
+  * `varRanges` &nbsp; x, y ranges % {'physical','paper'}
+  * `activeCstrX` &nbsp; activate constraint on x % {0,1}
+  * `varRanges` &nbsp; activate constraint on y % {0,1}
+
  
  ## METHODS :books: ## 
  
   1. __One-dimensional__
-       * `pwa_2_vars.m` &nbsp;
-       * Output: 
-         - `Mdl_ld` (_load RF models_)
-         - `Mdl_wp` (_wind power RF models_)
+       * `oneDimensionalPWA.m` &nbsp;
 
   2. __Triangles__  
-       * `figures_section_2_2.m` 
+       * `trianglesPWA.m` 
