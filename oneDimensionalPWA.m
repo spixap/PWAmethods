@@ -3,7 +3,7 @@
 clearvars -except spi_temp;
 close all;
 
-I = 31; % 200
+I = 21; % 200
 % Set of n coordinates on X axis: 1,...,n (x1=0, xn=6)
 n = I;
 % Set of m coordinates on Y axis: 1,...,m (y1=0, ym=6)
@@ -16,7 +16,7 @@ bigM = 100000;
 % % ------x: voltage and y: current
 
 % Test Function Selection (1-6):
-funSlct = 5;
+funSlct = 3;
 varRanges = 'paper'; % {'physical','paper'}
 activeCstrX = 1;
 activeCstrY = 1;
@@ -72,9 +72,27 @@ elseif funSlct == 2
     minFunVal   = -6;
     maxValFun   = 6;
     csntrFunVal = 3;
-    csntrYval   = 3.1;
-    z = linspace(minFunVal,maxValFun,m); 
-    [~,Z] = meshgrid(z,y);                  % level y = C
+    
+    if (activeCstrX == 1) && (activeCstrY == 0)
+       csntrXval = 2;
+       z = linspace(minFunVal,maxValFun,m);
+       [Z,~] = meshgrid(z,y);                  % level x = C
+    elseif (activeCstrY == 1) && (activeCstrX == 0)
+        csntrYval = 2;
+        z = linspace(minFunVal,maxValFun,m); 
+        [~,Z] = meshgrid(x,z);                  % level y = C
+    elseif (activeCstrX == 1) && (activeCstrY == 1)
+        csntrXval = 2;
+        csntrYval = 2;
+        z = linspace(minFunVal,maxValFun,m);
+        [Zx,~] = meshgrid(z,y); 
+        [~,Zy] = meshgrid(x,z); 
+    else
+        csntrYval   = 3.1;
+        z = linspace(minFunVal,maxValFun,m); 
+        [~,Z] = meshgrid(z,y);                  % level y = C        
+    end
+
 elseif funSlct == 3
     fun = ((10-Y).^3).*sin((X-1)*pi/4);
     minFunVal   = -800;
@@ -302,7 +320,16 @@ c1 = mesh(X,Y,csntrFunVal*ones(n,m),'FaceColor','r','FaceAlpha',0.3,'EdgeColor',
 if funSlct == 1
     c2 = mesh(csntrXval*ones(n,m),Y,Z,'FaceColor','r','FaceAlpha',0.3,'EdgeColor','none','DisplayName','constraint_2');
 elseif funSlct == 2
-    c2 = mesh(X,csntrYval*ones(n,m),Z,'FaceColor','r','FaceAlpha',0.3,'EdgeColor','none','DisplayName','constraint_2');
+    if (activeCstrX == 1) && (activeCstrY == 0)
+        c2 = mesh(csntrXval*ones(n,m),Y,Z,'FaceColor','r','FaceAlpha',0.3,'EdgeColor','none','DisplayName','constraint_2');
+    elseif (activeCstrY == 1) && (activeCstrX == 0)
+        c2 = mesh(X,csntrYval*ones(n,m),Z,'FaceColor','r','FaceAlpha',0.3,'EdgeColor','none','DisplayName','constraint_2');
+    elseif (activeCstrX == 1) && (activeCstrY == 1)
+        c2 = mesh(csntrXval*ones(n,m),Y,Zx,'FaceColor','r','FaceAlpha',0.3,'EdgeColor','none','DisplayName','constraint_2');
+        c3 = mesh(X,csntrYval*ones(n,m),Zy,'FaceColor','r','FaceAlpha',0.3,'EdgeColor','none','DisplayName','constraint_3');
+    else
+        c2 = mesh(X,csntrYval*ones(n,m),Z,'FaceColor','r','FaceAlpha',0.3,'EdgeColor','none','DisplayName','constraint_2');
+    end
 else
     if (activeCstrX == 1) && (activeCstrY == 0)
         c2 = mesh(csntrXval*ones(n,m),Y,Z,'FaceColor','r','FaceAlpha',0.3,'EdgeColor','none','DisplayName','constraint_2');
@@ -334,11 +361,22 @@ f = scatter3(sol.x_var,sol.y_var,f_xy,20,'b*','DisplayName','f(x^*,y^*)');
 if funSlct == 1
     legend([p,s,c1,c2,f],{'$f(x,y)$','$\hat{f}_{xy}^*$',['$f \ge',num2str(csntrFunVal),'$'],['$x =',num2str(csntrXval),'$'],'$f(x^*,y^*)$'},'FontSize',12,...
         'Fontname','Times New Roman','NumColumns',1,'interpreter','latex','Location','northeastoutside');
-elseif funSlct == 2
-    legend([p,s,c1,c2,f],{'$f(x,y)$','$\hat{f}_{xy}^*$',['$f \ge',num2str(csntrFunVal),'$'],['$y =',num2str(csntrYval),'$'],'$f(x^*,y^*)$'},'FontSize',12,...
+elseif funSlct == 2    
+     if (activeCstrX == 1) && (activeCstrY == 0)
+        legend([p,s,c1,c2,f],{'$f(x,y)$','$\hat{f}_{xy}^*$',['$f \ge',num2str(csntrFunVal),'$'],['$x =',num2str(csntrXval),'$'],'$f(x^*,y^*)$'},'FontSize',12,...
+            'Fontname','Times New Roman','NumColumns',1,'interpreter','latex','Location','northeastoutside');
+    elseif (activeCstrY == 1) && (activeCstrX == 0)
+        legend([p,s,c1,c2,f],{'$f(x,y)$','$\hat{f}_{xy}^*$',['$f \ge',num2str(csntrFunVal),'$'],['$y =',num2str(csntrYval),'$'],'$f(x^*,y^*)$'},'FontSize',12,...
+            'Fontname','Times New Roman','NumColumns',1,'interpreter','latex','Location','northeastoutside');
+    elseif (activeCstrX == 1) && (activeCstrY == 1)
+        legend([p,s,c1,c2,c3,f],{'$f(x,y)$','$\hat{f}_{xy}^*$',['$f \ge',num2str(csntrFunVal),'$'],['$x =',num2str(csntrXval),'$'],...
+            ['$y =',num2str(csntrYval),'$'],'$f(x^*,y^*)$'},'FontSize',12,...
+            'Fontname','Times New Roman','NumColumns',1,'interpreter','latex','Location','northeastoutside');
+    else
+        legend([p,s,c1,c2,f],{'$f(x,y)$','$\hat{f}_{xy}^*$',['$f \ge',num2str(csntrFunVal),'$'],['$y =',num2str(csntrYval),'$'],'$f(x^*,y^*)$'},'FontSize',12,...
         'Fontname','Times New Roman','NumColumns',1,'interpreter','latex','Location','northeastoutside');
+    end
 else
-    
     if (activeCstrX == 1) && (activeCstrY == 0)
         legend([p,s,c1,c2,f],{'$f(x,y)$','$\hat{f}_{xy}^*$',['$f \ge',num2str(csntrFunVal),'$'],['$x =',num2str(csntrXval),'$'],'$f(x^*,y^*)$'},'FontSize',12,...
             'Fontname','Times New Roman','NumColumns',1,'interpreter','latex','Location','northeastoutside');
