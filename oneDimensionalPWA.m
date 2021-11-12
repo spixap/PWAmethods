@@ -3,7 +3,7 @@
 clearvars -except spi_temp;
 close all;
 
-I = 11; % 200
+I = 31; % 200
 % Set of n coordinates on X axis: 1,...,n (x1=0, xn=6)
 n = I;
 % Set of m coordinates on Y axis: 1,...,m (y1=0, ym=6)
@@ -16,7 +16,7 @@ bigM = 100000;
 % % ------x: voltage and y: current
 
 % Test Function Selection (1-6):
-funSlct = 1;
+funSlct = 5;
 varRanges = 'paper'; % {'physical','paper'}
 activeCstrX = 1;
 activeCstrY = 1;
