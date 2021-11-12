@@ -15,7 +15,7 @@ bigM = 100000;
 % % ------x: voltage and y: current
 
 % Test Function Selection (1-6):
-funSlct = 6;
+funSlct = 2;
 varRanges = 'physical'; % {'physical','paper'}
 
 if funSlct == 1
@@ -53,13 +53,6 @@ else
     y = linspace(y_min,y_max,m);
     [X,Y] = meshgrid(x,y);
 end
-
-
-%}
-
-% x = linspace(x_min,x_max,n); 
-% y = linspace(y_min,y_max,m); 
-% [X,Y] = meshgrid(x,y);
         
 % Functions to approximate:
 if funSlct == 1
@@ -95,7 +88,6 @@ elseif funSlct == 6
     csntrFunVal = 1;
 end
 z = linspace(minFunVal,maxValFun,m);
-% [~,Z] = meshgrid(z,y);
 [Z,~] = meshgrid(z,y);
 
 %% --------------------\\ Optimization Problem \\--------------------------
@@ -220,16 +212,14 @@ elseif funSlct == 2
     prob.Constraints.linearityCnstr2 = y_var == csntrYval;
 end
 
-
 %% --------------------\\ Optimization Solution \\-------------------------
 options = optimoptions('intlinprog');
 [sol,f_sol] = solve(prob,'Options',options);
 %% -----------------------\\ Optimal Solution Plot\\-------------------------
 surf(X,Y,fun,'FaceAlpha',0.8,'DisplayName','function');xlabel('x');ylabel('y');zlabel('f(x,y)');grid on;hold on;
-% s = scatter3(sol.y_var,sol.x_var,f_sol,'ro','filled','DisplayName','Optimal Point');
 s = scatter3(sol.x_var,sol.y_var,f_sol,'ro','filled','DisplayName','Optimal Point');
 
-s.SizeData = 20;
+s.SizeData = 40;
 mesh(X,Y,csntrFunVal*ones(n,m),'FaceColor','r','FaceAlpha',0.3,'EdgeColor','none','DisplayName','constraint_1');
 
 if funSlct == 1
@@ -238,18 +228,36 @@ elseif funSlct == 2
     mesh(X,csntrYval*ones(n,m),Z,'FaceColor','r','FaceAlpha',0.3,'EdgeColor','none','DisplayName','constraint_2');
 end
 
-legend;
+% legend;
 %% -----------------------\\Validation of solution\\-------------------------
+% if funSlct == 1
+%     f_xy = sol.x_var * sol.y_var;
+% elseif funSlct == 2
+%     f_xy = sol.x_var * sin((sol.y_var - 3)*pi/4);
+% elseif funSlct == 3
+%     f_xy = ((10-sol.x_var).^3).*sin((sol.y_var-1)*pi/4);
+% elseif funSlct == 4
+%     f_xy = sol.x_var + sin((sol.y_var-3)*pi/4);
+% elseif funSlct == 5 
+%     f_xy = sol.x_var * sin((sol.y_var-1)*pi/4);
+% elseif funSlct == 6
+%     f_xy = sol.x_var * cos((sol.y_var-1)*pi/4);
+% end
+
 if funSlct == 1
-    f_xy = sol.x_var * sol.y_var;
+    f_xy = sol.y_var * sol.x_var;
 elseif funSlct == 2
-    f_xy = sol.x_var * sin((sol.y_var - 3)*pi/4);
+    f_xy = sol.y_var * sin((sol.x_var - 3)*pi/4);
 elseif funSlct == 3
-    f_xy = ((10-sol.x_var).^3).*sin((sol.y_var-1)*pi/4);
+    f_xy = ((10-sol.y_var).^3).*sin((sol.x_var-1)*pi/4);
 elseif funSlct == 4
-    f_xy = sol.x_var + sin((sol.y_var-3)*pi/4);
+    f_xy = sol.y_var + sin((sol.x_var-3)*pi/4);
 elseif funSlct == 5 
-    f_xy = sol.x_var * sin((sol.y_var-1)*pi/4);
+    f_xy = sol.y_var * sin((sol.x_var-1)*pi/4);
 elseif funSlct == 6
-    f_xy = sol.x_var * cos((sol.y_var-1)*pi/4);
+    f_xy = sol.y_var * cos((sol.x_var-1)*pi/4);
 end
+
+f = scatter3(sol.x_var,sol.y_var,f_xy,20,'b*','DisplayName','f_{xy}validation');
+
+legend;
