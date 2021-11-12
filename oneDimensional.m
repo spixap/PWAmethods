@@ -1,5 +1,6 @@
-%%%%%%%%%% PWA approximation of function of 2 variables f(x,y) %%%%%%%%%%%%
-clearvars -except spi_temp ;
+%%%%%%%%%%%%%%%%%%%% PWA of f(x,y) 1-dimensional method %%%%%%%%%%%%%%%%%%%
+%%
+clearvars -except spi_temp;
 close all;
 
 I = 11; % 200
