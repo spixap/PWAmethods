@@ -20,7 +20,9 @@ tempProb = optimproblem('ObjectiveSense','minimize');
 x_var   = optimvar(varNames{1},'LowerBound',x_min,'UpperBound',x_max);
 h_i     = optimvar(varNames{2},n+1,'Type','integer','LowerBound',0,'UpperBound',1);
 alpha_i = optimvar(varNames{3},n,'LowerBound',0,'UpperBound',1);
-f_a     = optimvar(varNames{4},'LowerBound',min(fun),'UpperBound',max(fun));
+% f_a     = optimvar(varNames{4},'LowerBound',min(fun),'UpperBound',max(fun));
+f_a     = optimvar(varNames{4},'LowerBound',-Inf,'UpperBound',Inf);
+
 
 % Naming variables indexes
 indexNames_i = cell(n,1);
