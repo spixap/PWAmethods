@@ -12,8 +12,8 @@ m = par.I;
 % Test Function Selection (1-6):
 funSlct = 1;
 varRanges = 'paper'; % {'physical','paper'}
-activeCstrX = 0;
-activeCstrY = 1;
+activeCstrX = 1;
+activeCstrY = 0;
 
 
 if funSlct == 1
@@ -58,10 +58,10 @@ end
 fun = Y.*X;
 minFunVal   = 0;
 maxValFun   = 40;
-csntrFunVal = 0;
+csntrFunVal = 10;
 
 if (activeCstrX == 1) && (activeCstrY == 0)
-    csntrXval = 2;
+    csntrXval = 5;
     z = linspace(minFunVal,maxValFun,m);
     [Z,~] = meshgrid(z,y);                  % level x = C
 elseif (activeCstrY == 1) && (activeCstrX == 0)

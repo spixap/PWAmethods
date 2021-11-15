@@ -66,7 +66,7 @@ if funSlct == 1
     fun = Y.*X;
     minFunVal   = 0;
     maxValFun   = 40;
-    csntrFunVal = 15;
+    csntrFunVal = 10;
 elseif funSlct == 2
     fun = Y.*sin((X-3)*pi/4);
     minFunVal   = -6;
