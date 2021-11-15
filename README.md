@@ -16,8 +16,14 @@ _D’Ambrosio, C., Lodi, A., Martello, S., 2010. "Piecewise linear approximation
  
  ## METHODS :books: ## 
  
-  1. __One-dimensional__
+   1. __Function of 1 variable__
+       * `funSeperablePWA.m` &nbsp;
+      
+  2. __Function of 2 variables: One-dimensional__
        * `oneDimensionalPWA.m` &nbsp;
 
-  2. __Triangles__  
+  3. __Function of 2 variables: Triangles__  
        * `trianglesPWA.m` 
+
+  4. __Function xy: Seperable programming__  
+       * `sprblPrgrmXY.m` 
