@@ -16,7 +16,7 @@ bigM = 100000;
 % % ------x: voltage and y: current
 
 % Test Function Selection (1-6):
-funSlct = 6;
+funSlct = 1;
 varRanges = 'paper'; % {'physical','paper'}
 activeCstrX = 1;
 activeCstrY = 1;

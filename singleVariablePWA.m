@@ -66,7 +66,6 @@ prob.Constraints.sumAlpha = sum(alpha_i) == 1;
 % x value estimation
 prob.Constraints.xValueEst = x_var == x * alpha_i;
 
-
 % f_a value estimation
 prob.Constraints.funValue = f_a ==  fun * alpha_i;
 
