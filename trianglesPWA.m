@@ -221,8 +221,6 @@ prob.Objective = f_a;
 
 % -----------VARIABLE X
 alphaCnstr = optimconstr(n,m);
-% functionValueCnstrA = optimconstr(m-1);
-% functionValueCnstrB = optimconstr(m-1);
 
 % SOS3 on binaries h_u and h_l
 prob.Constraints.huSOS3a = h_u_ij(1,:) == 0;
